@@ -25,15 +25,20 @@ body {
 
 @layer components {
   .glass-card {
-    @apply bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl;
+    background-color: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
   }
 
   .neon-border {
-    @apply border border-cyan-400/30 shadow-[0_0_10px_rgba(0,242,255,0.2)];
+    border: 1px solid rgba(0, 242, 255, 0.3);
+    box-shadow: 0 0 10px rgba(0, 242, 255, 0.2);
   }
 
   .neon-text {
-    @apply shadow-[0_0_10px_rgba(0,242,255,0.5)];
+    text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
   }
 }
 
