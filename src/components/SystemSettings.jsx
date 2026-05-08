@@ -256,28 +256,6 @@ const SystemSettings = () => {
           {/* ... stats ... */}
         </div>
 
-        {/* Master SQL Import Section */}
-        <div className="glass-card p-8 col-span-full space-y-4 border-red-500/20 bg-red-500/5">
-          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
-            <Database className="text-red-500" size={20} />
-            <h3 className="font-bold uppercase tracking-widest text-sm text-red-500">Herramienta de Importación Maestra (SQL)</h3>
-          </div>
-          <p className="text-xs text-gray-500 mb-2">Pega aquí el contenido de tu archivo .sql para actualizar toda la base de datos de una vez.</p>
-          <textarea 
-            value={rawSql}
-            onChange={(e) => setRawSql(e.target.value)}
-            placeholder="Pega el contenido del script.sql aquí..."
-            className="w-full bg-black/40 border border-white/10 rounded-xl p-4 min-h-[150px] font-mono text-xs focus:border-red-500 outline-none transition-all"
-          />
-          <button 
-            onClick={handleRawSql}
-            disabled={importing || !rawSql}
-            className="w-full flex items-center justify-center gap-2 bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/30 p-4 rounded-xl transition-all font-black uppercase tracking-widest disabled:opacity-30"
-          >
-            {importing ? <RefreshCw className="animate-spin" size={18} /> : <Zap size={18} />}
-            {importing ? 'Ejecutando Script...' : 'Importar Base de Datos (Modo Dios)'}
-          </button>
-        </div>
       </div>
     </div>
   )
