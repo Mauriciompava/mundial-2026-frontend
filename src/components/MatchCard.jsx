@@ -70,15 +70,15 @@ const MatchCard = ({ match, adminMode, userId }) => {
       </div>
 
       <div className="flex items-center justify-between gap-4 py-4">
-        <div className="flex flex-col items-center gap-3 flex-1">
-          <div className="text-5xl drop-shadow-xl">{match.homeTeam.flag}</div>
-          <span className="font-black text-xs text-center tracking-tighter uppercase">{match.homeTeam.name}</span>
+        <div className="flex flex-col items-center gap-2 flex-1">
+          <div className="text-4xl sm:text-5xl drop-shadow-xl">{match.homeTeam.flag}</div>
+          <span className="font-black text-[10px] sm:text-xs text-center tracking-tighter uppercase line-clamp-1">{match.homeTeam.name}</span>
         </div>
 
         <div className="flex flex-col items-center">
           {match.status === 'FINISHED' ? (
-            <div className="text-4xl font-black bg-white/5 px-4 py-2 rounded-xl border border-white/10">
-              {match.homeScore} <span className="text-gray-600 text-2xl mx-1">-</span> {match.awayScore}
+            <div className="text-2xl sm:text-4xl font-black bg-white/5 px-3 sm:px-4 py-1 sm:py-2 rounded-xl border border-white/10">
+              {match.homeScore} <span className="text-gray-600 text-xl sm:text-2xl mx-1">-</span> {match.awayScore}
             </div>
           ) : (
             <div className="p-3 bg-white/5 rounded-full border border-white/10">
@@ -87,9 +87,9 @@ const MatchCard = ({ match, adminMode, userId }) => {
           )}
         </div>
 
-        <div className="flex flex-col items-center gap-3 flex-1">
-          <div className="text-5xl drop-shadow-xl">{match.awayTeam.flag}</div>
-          <span className="font-black text-xs text-center tracking-tighter uppercase">{match.awayTeam.name}</span>
+        <div className="flex flex-col items-center gap-2 flex-1">
+          <div className="text-4xl sm:text-5xl drop-shadow-xl">{match.awayTeam.flag}</div>
+          <span className="font-black text-[10px] sm:text-xs text-center tracking-tighter uppercase line-clamp-1">{match.awayTeam.name}</span>
         </div>
       </div>
 

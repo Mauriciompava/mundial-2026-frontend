@@ -64,7 +64,7 @@ const Leaderboard = ({ onUserSelect }) => {
                 key={player.id} 
                 className="p-6 flex items-center justify-between hover:bg-white/[0.03] transition-all group relative"
               >
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-4 sm:gap-8">
                   <div className="relative">
                     <span className={`text-3xl font-black w-10 block text-center ${getRankColor(index)}`}>
                       {index + 1}
@@ -76,7 +76,7 @@ const Leaderboard = ({ onUserSelect }) => {
                   
                   <div className="flex items-center gap-5">
                     <div className="relative group/avatar">
-                      <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-2xl border border-white/10 group-hover:border-cup-gold/50 transition-colors shadow-lg">
+                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-xl sm:text-2xl border border-white/10 group-hover:border-cup-gold/50 transition-colors shadow-lg">
                         {player.username.substring(0, 2).toUpperCase()}
                       </div>
                       <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-cup-navy border-2 border-white/10 rounded-full flex items-center justify-center">
@@ -85,7 +85,7 @@ const Leaderboard = ({ onUserSelect }) => {
                     </div>
                     <div>
                       <div className="flex items-center gap-3">
-                        <p className="text-xl font-bold tracking-tight">{player.fullName || player.username}</p>
+                        <p className="text-base sm:text-xl font-bold tracking-tight">{player.fullName || player.username}</p>
                         {player.championTeam && (
                           <div className="flex items-center gap-2 bg-cup-gold/10 px-3 py-1 rounded-lg text-[10px] text-cup-gold border border-cup-gold/20 font-black uppercase tracking-tighter">
                             <Trophy size={12} />
@@ -107,9 +107,9 @@ const Leaderboard = ({ onUserSelect }) => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-8">
+                <div className="flex items-center gap-4 sm:gap-8">
                   <div className="text-right">
-                    <p className="text-4xl font-black text-white tracking-tighter">{player.totalPoints.toLocaleString()}</p>
+                    <p className="text-2xl sm:text-4xl font-black text-white tracking-tighter">{player.totalPoints.toLocaleString()}</p>
                     <p className="text-[10px] text-cup-cyan font-black uppercase tracking-[0.2em]">Puntos</p>
                   </div>
                   
