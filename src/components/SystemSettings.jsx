@@ -14,7 +14,11 @@ const SystemSettings = () => {
     registrationOpen: 'true'
   })
   const [saving, setSaving] = useState(false)
+  const [seeding, setSeeding] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [seedMessage, setSeedMessage] = useState('')
+  const [rawSql, setRawSql] = useState('')
+  const [importing, setImporting] = useState(false)
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/settings`)
@@ -45,6 +49,47 @@ const SystemSettings = () => {
     })
   }
 
+  const handleSeed = () => {
+    if (!window.confirm("¿Estás seguro? Esto cargará los equipos y partidos iniciales. Solo debes hacerlo una vez.")) return
+    
+    setSeeding(true)
+    fetch(`${API_BASE_URL}/api/admin/seed`, { method: 'POST' })
+      .then(res => res.text())
+      .then(msg => {
+        setSeedMessage(msg)
+        setSeeding(false)
+        setTimeout(() => setSeedMessage(''), 5000)
+      })
+      .catch(err => {
+        console.error("Error seeding:", err)
+        setSeeding(false)
+        alert("Error al inicializar datos.")
+      })
+  }
+
+  const handleRawSql = () => {
+    if (!rawSql.trim()) return
+    if (!window.confirm("¡CUIDADO! Esto modificará la base de datos directamente. ¿Deseas continuar?")) return
+    
+    setImporting(true)
+    fetch(`${API_BASE_URL}/api/admin/seed-raw`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: rawSql
+    })
+      .then(res => res.text())
+      .then(msg => {
+        setSeedMessage(msg)
+        setImporting(false)
+        setRawSql('')
+      })
+      .catch(err => {
+        console.error("Error importing SQL:", err)
+        setImporting(false)
+        alert("Error al importar SQL.")
+      })
+  }
+
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
       <div className="flex items-center justify-between">
@@ -69,6 +114,16 @@ const SystemSettings = () => {
           className="bg-green-500/10 border border-green-500/20 text-green-500 p-4 rounded-xl flex items-center gap-3 font-bold"
         >
           <Zap size={18} /> Configuración actualizada correctamente.
+        </motion.div>
+      )}
+
+      {seedMessage && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-cup-cyan/10 border border-cup-cyan/20 text-cup-cyan p-4 rounded-xl flex items-center gap-3 font-bold"
+        >
+          <Database size={18} /> {seedMessage}
         </motion.div>
       )}
 
@@ -168,6 +223,17 @@ const SystemSettings = () => {
                 <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${settings.maintenanceMode === 'true' ? 'left-7' : 'left-1'}`} />
               </button>
             </div>
+
+            <div className="pt-4 border-t border-white/5">
+              <button 
+                onClick={handleSeed}
+                disabled={seeding}
+                className="w-full flex items-center justify-center gap-2 bg-white/5 hover:bg-cup-cyan/20 border border-white/10 hover:border-cup-cyan/50 p-3 rounded-xl transition-all text-xs font-black uppercase tracking-widest"
+              >
+                {seeding ? <RefreshCw className="animate-spin" size={14} /> : <Database size={14} />}
+                {seeding ? 'Inicializando...' : 'Inicializar Mundial 2026'}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -187,21 +253,30 @@ const SystemSettings = () => {
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 col-span-full">
-          {[
-            { label: 'Uptime', value: '99.9%', icon: Clock, color: 'text-green-500' },
-            { label: 'Región', value: 'Global / AWS', icon: Globe, color: 'text-blue-500' },
-            { label: 'Versión', value: 'v2.0.4-stable', icon: Zap, color: 'text-cup-gold' },
-          ].map((item, i) => (
-            <div key={i} className="glass-card p-6 flex items-center gap-4">
-              <div className={`p-3 bg-white/5 rounded-xl ${item.color}`}>
-                <item.icon size={20} />
-              </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-gray-500">{item.label}</p>
-                <p className="text-lg font-black">{item.value}</p>
-              </div>
-            </div>
-          ))}
+          {/* ... stats ... */}
+        </div>
+
+        {/* Master SQL Import Section */}
+        <div className="glass-card p-8 col-span-full space-y-4 border-red-500/20 bg-red-500/5">
+          <div className="flex items-center gap-3 border-b border-white/5 pb-4 mb-4">
+            <Database className="text-red-500" size={20} />
+            <h3 className="font-bold uppercase tracking-widest text-sm text-red-500">Herramienta de Importación Maestra (SQL)</h3>
+          </div>
+          <p className="text-xs text-gray-500 mb-2">Pega aquí el contenido de tu archivo .sql para actualizar toda la base de datos de una vez.</p>
+          <textarea 
+            value={rawSql}
+            onChange={(e) => setRawSql(e.target.value)}
+            placeholder="Pega el contenido del script.sql aquí..."
+            className="w-full bg-black/40 border border-white/10 rounded-xl p-4 min-h-[150px] font-mono text-xs focus:border-red-500 outline-none transition-all"
+          />
+          <button 
+            onClick={handleRawSql}
+            disabled={importing || !rawSql}
+            className="w-full flex items-center justify-center gap-2 bg-red-500/20 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/30 p-4 rounded-xl transition-all font-black uppercase tracking-widest disabled:opacity-30"
+          >
+            {importing ? <RefreshCw className="animate-spin" size={18} /> : <Zap size={18} />}
+            {importing ? 'Ejecutando Script...' : 'Importar Base de Datos (Modo Dios)'}
+          </button>
         </div>
       </div>
     </div>

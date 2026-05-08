@@ -93,8 +93,8 @@ function App() {
           <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 tracking-tighter">
             POLLA <span className="text-transparent bg-clip-text bg-gradient-to-r from-cup-gold to-yellow-200">PRO+</span>
           </h1>
-          <p className="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto">
-            La plataforma más interactiva para vivir el mundial. Predice, compite y domina el ranking global.
+          <p className="text-gray-400 text-sm sm:text-lg md:text-xl max-w-2xl mx-auto px-2">
+            La plataforma más interactiva para vivir el mundial. Predice, comparte y domina el ranking global.
           </p>
         </header>
 
@@ -150,7 +150,7 @@ function App() {
                 />
               )}
               {!currentUser && (
-                <div className="glass-card p-10 text-center mb-8 border-dashed border-cup-gold/30">
+                <div className="glass-card p-4 sm:p-6 text-center mb-8 border-dashed border-cup-gold/30">
                   <Trophy size={48} className="mx-auto text-cup-gold/50 mb-4" />
                   <h3 className="text-xl font-bold mb-2">¡Bienvenido a la Polla Pro+!</h3>
                   <p className="text-gray-500 mb-6 max-w-md mx-auto">Ingresa con tu cuenta para empezar a predecir resultados y competir por el primer lugar.</p>
