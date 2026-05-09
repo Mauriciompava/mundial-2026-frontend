@@ -42,16 +42,16 @@ const Leaderboard = ({ onUserSelect }) => {
       className="max-w-4xl mx-auto"
     >
       <div className="glass-card overflow-hidden border-white/5 shadow-2xl">
-        <div className="p-8 border-b border-white/5 flex items-center justify-between bg-white/5">
+        <div className="p-4 sm:p-8 border-b border-white/5 flex items-center justify-between bg-white/5">
           <div>
-            <h2 className="text-2xl font-black flex items-center gap-3">
-              <Medal className="text-cup-gold" size={28} /> Ranking Global
+            <h2 className="text-lg sm:text-2xl font-black flex items-center gap-2 sm:gap-3">
+              <Medal className="text-cup-gold" size={22} /> Ranking Global
             </h2>
-            <p className="text-gray-500 text-sm mt-1">Los mejores pronosticadores del torneo</p>
+            <p className="text-gray-500 text-xs sm:text-sm mt-1">Los mejores pronosticadores del torneo</p>
           </div>
           <div className="text-right">
             <span className="text-[10px] text-gray-400 uppercase font-black tracking-[0.2em] block mb-1">Actualizado</span>
-            <span className="text-xs font-bold text-cup-cyan bg-cup-cyan/10 px-3 py-1 rounded-full">En Vivo</span>
+            <span className="text-[10px] sm:text-xs font-bold text-cup-cyan bg-cup-cyan/10 px-2 sm:px-3 py-1 rounded-full">En Vivo</span>
           </div>
         </div>
 
@@ -62,63 +62,48 @@ const Leaderboard = ({ onUserSelect }) => {
             players.map((player, index) => (
               <div 
                 key={player.id} 
-                className="p-6 flex items-center justify-between hover:bg-white/[0.03] transition-all group relative"
+                className="p-3 sm:p-5 flex items-center gap-3 sm:gap-5 hover:bg-white/[0.03] transition-all group"
               >
-                <div className="flex items-center gap-4 sm:gap-8">
-                  <div className="relative">
-                    <span className={`text-3xl font-black w-10 block text-center ${getRankColor(index)}`}>
-                      {index + 1}
-                    </span>
-                    {index < 3 && (
-                      <Star className="absolute -top-2 -right-2 text-cup-gold fill-cup-gold animate-pulse" size={14} />
-                    )}
+                {/* Rank Number */}
+                <div className="relative shrink-0 w-8 text-center">
+                  <span className={`text-xl sm:text-2xl font-black ${getRankColor(index)}`}>
+                    {index + 1}
+                  </span>
+                  {index < 3 && (
+                    <Star className="absolute -top-1 -right-1 text-cup-gold fill-cup-gold animate-pulse" size={10} />
+                  )}
+                </div>
+
+                {/* Avatar */}
+                <div className="relative shrink-0">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-lg border border-white/10">
+                    {player.username.substring(0, 2).toUpperCase()}
                   </div>
-                  
-                  <div className="flex items-center gap-5">
-                    <div className="relative group/avatar">
-                      <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-xl sm:text-2xl border border-white/10 group-hover:border-cup-gold/50 transition-colors shadow-lg">
-                        {player.username.substring(0, 2).toUpperCase()}
-                      </div>
-                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-cup-navy border-2 border-white/10 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                      </div>
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-3">
-                        <p className="text-base sm:text-xl font-bold tracking-tight">{player.fullName || player.username}</p>
-                        {player.championTeam && (
-                          <div className="flex items-center gap-2 bg-cup-gold/10 px-3 py-1 rounded-lg text-[10px] text-cup-gold border border-cup-gold/20 font-black uppercase tracking-tighter">
-                            <Trophy size={12} />
-                            {player.championTeam.name}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 mt-1">
-                        <p className="text-sm text-gray-500 flex items-center gap-1">
-                          <Mail size={12} /> {player.email}
-                        </p>
-                        {player.phoneNumber && (
-                          <p className="text-sm text-gray-500 flex items-center gap-1 border-l border-white/10 pl-4">
-                            <Phone size={12} /> {player.phoneNumber}
-                          </p>
-                        )}
-                      </div>
-                    </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-cup-navy border border-white/10 rounded-full flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 sm:gap-8">
-                  <div className="text-right">
-                    <p className="text-2xl sm:text-4xl font-black text-white tracking-tighter">{player.totalPoints.toLocaleString()}</p>
-                    <p className="text-[10px] text-cup-cyan font-black uppercase tracking-[0.2em]">Puntos</p>
+                {/* Info - takes remaining space */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm sm:text-base font-bold truncate">{player.fullName || player.username}</p>
+                    {player.championTeam && (
+                      <span className="inline-flex items-center gap-1 bg-cup-gold/10 px-2 py-0.5 rounded text-[9px] sm:text-[10px] text-cup-gold border border-cup-gold/20 font-black uppercase shrink-0">
+                        <Trophy size={10} />
+                        {player.championTeam.name}
+                      </span>
+                    )}
                   </div>
-                  
-                  <button 
-                    onClick={() => onUserSelect(player)}
-                    className="opacity-0 group-hover:opacity-100 bg-white text-black px-4 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all hover:scale-105 active:scale-95 shadow-xl"
-                  >
-                    Apostar
-                  </button>
+                  <p className="text-[11px] text-gray-500 truncate hidden sm:flex items-center gap-1 mt-0.5">
+                    <Mail size={10} /> {player.email}
+                  </p>
+                </div>
+
+                {/* Points - always visible */}
+                <div className="text-right shrink-0">
+                  <p className="text-lg sm:text-2xl font-black text-white tracking-tighter leading-none">{player.totalPoints.toLocaleString()}</p>
+                  <p className="text-[8px] sm:text-[10px] text-cup-cyan font-black uppercase tracking-wider">Puntos</p>
                 </div>
               </div>
             ))
