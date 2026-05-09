@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Users, Trophy, Settings, LogOut, ShieldCheck, Database, ChevronRight, Home } from 'lucide-react'
+import { LayoutDashboard, Users, Trophy, Settings, LogOut, ShieldCheck, Database, ChevronRight, Home, Menu, X } from 'lucide-react'
 import ParticipantManager from './ParticipantManager'
 import TournamentSchedule from './TournamentSchedule'
 import SystemSettings from './SystemSettings'
@@ -9,6 +9,7 @@ import API_BASE_URL from '../api'
 const AdminDashboard = ({ onLogout }) => {
   const [activeView, setActiveView] = useState(localStorage.getItem('admin_active_view') || 'dashboard')
   const [stats, setStats] = useState({ users: 0, predictions: 0, income: 0 })
+  const [sidebarOpen, setSidebarOpen] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('admin_active_view', activeView)
@@ -80,8 +81,23 @@ const AdminDashboard = ({ onLogout }) => {
 
   return (
     <div className="min-h-screen bg-cup-navy text-white flex overflow-hidden">
-      {/* Sidebar ... */}
-      <aside className="w-72 border-r border-white/5 bg-black/40 backdrop-blur-2xl flex flex-col shrink-0">
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-30 md:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
+
+      {/* Sidebar */}
+      <aside className={`fixed md:relative z-40 w-72 border-r border-white/5 bg-black/90 md:bg-black/40 backdrop-blur-2xl flex flex-col shrink-0 h-full transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+        {/* Mobile close button */}
+        <button 
+          onClick={() => setSidebarOpen(false)}
+          className="absolute top-4 right-4 p-2 text-gray-400 hover:text-white md:hidden"
+        >
+          <X size={20} />
+        </button>
         <div className="p-8 border-b border-white/5">
           <div className="flex items-center gap-3 mb-2">
             <ShieldCheck className="text-cup-gold" size={24} />
@@ -94,7 +110,7 @@ const AdminDashboard = ({ onLogout }) => {
           {menuItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveView(item.id)}
+              onClick={() => { setActiveView(item.id); setSidebarOpen(false); }}
               className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all group ${activeView === item.id ? 'bg-white text-black shadow-[0_0_20px_rgba(255,255,255,0.1)] scale-[1.02]' : 'hover:bg-white/5 text-gray-400'}`}
             >
               <item.icon size={20} className={activeView === item.id ? 'text-black' : 'group-hover:text-white transition-colors'} />
@@ -125,7 +141,14 @@ const AdminDashboard = ({ onLogout }) => {
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-cup-gold/5 via-transparent to-transparent flex flex-col">
-        <header className="h-20 border-b border-white/5 flex items-center justify-between px-10 bg-black/10 backdrop-blur-md sticky top-0 z-20 shrink-0">
+        <header className="h-16 md:h-20 border-b border-white/5 flex items-center justify-between px-4 md:px-10 bg-black/10 backdrop-blur-md sticky top-0 z-20 shrink-0">
+          {/* Mobile hamburger */}
+          <button 
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-gray-400 hover:text-white md:hidden"
+          >
+            <Menu size={24} />
+          </button>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 text-gray-500 text-xs font-bold">
               <button 
@@ -158,7 +181,7 @@ const AdminDashboard = ({ onLogout }) => {
           </div>
         </header>
 
-        <div className="p-10 flex-1">
+        <div className="p-4 md:p-10 flex-1">
           <AnimatePresence mode="wait">
             {activeView === 'dashboard' && (
               <motion.div
