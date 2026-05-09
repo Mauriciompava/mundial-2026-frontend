@@ -7,6 +7,8 @@ const MatchCard = ({ match, adminMode, userId }) => {
   const [prediction, setPrediction] = useState({ home: '', away: '' })
   const [submitted, setSubmitted] = useState(false)
   const [adminResult, setAdminResult] = useState({ home: '', away: '' })
+  const [pointsWon, setPointsWon] = useState(null)
+  const [predictionData, setPredictionData] = useState(null)
 
   useEffect(() => {
     if (userId && !adminMode) {
@@ -16,11 +18,29 @@ const MatchCard = ({ match, adminMode, userId }) => {
           if (data && data.id) {
             setSubmitted(true)
             setPrediction({ home: data.predictedHomeScore, away: data.predictedAwayScore })
+            setPredictionData(data)
+            if (data.pointsWon !== null && data.pointsWon !== undefined) {
+              setPointsWon(data.pointsWon)
+            }
           }
         })
         .catch(() => {}) 
     }
   }, [userId, match.id, adminMode])
+
+  const getPointsLabel = () => {
+    if (pointsWon === null || pointsWon === undefined) return null
+    if (pointsWon > 0) {
+      // Determine type of hit
+      const exactMatch = predictionData &&
+        match.homeScore === predictionData.predictedHomeScore &&
+        match.awayScore === predictionData.predictedAwayScore
+      
+      const label = exactMatch ? 'EXACTO' : 'ACIERTO'
+      return { label, points: pointsWon, color: 'text-cup-cyan', bg: 'bg-cup-cyan/10 border-cup-cyan/20' }
+    }
+    return { label: 'SIN ACIERTO', points: 0, color: 'text-gray-500', bg: 'bg-white/5 border-white/10' }
+  }
 
   const handlePredict = () => {
     if (prediction.home !== '' && prediction.away !== '') {
@@ -43,9 +63,11 @@ const MatchCard = ({ match, adminMode, userId }) => {
     if (adminResult.home !== '' && adminResult.away !== '') {
       fetch(`${API_BASE_URL}/api/matches/${match.id}/result?homeScore=${adminResult.home}&awayScore=${adminResult.away}`, {
         method: 'POST'
-      }).then(() => window.location.reload()) // Simple refresh to show new points
+      }).then(() => window.location.reload())
     }
   }
+
+  const pointsInfo = getPointsLabel()
 
   return (
     <motion.div 
@@ -110,7 +132,7 @@ const MatchCard = ({ match, adminMode, userId }) => {
         <div className="mt-2">
           {submitted ? (
             <div className="bg-cup-gold/10 border border-cup-gold/30 p-3 rounded-xl flex items-center justify-center gap-2 text-cup-gold text-xs font-bold uppercase">
-              <CheckCircle2 size={14} /> Predicción Guardada
+              <CheckCircle2 size={14} /> Predicción Guardada ({prediction.home} - {prediction.away})
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -137,10 +159,25 @@ const MatchCard = ({ match, adminMode, userId }) => {
         </div>
       )}
 
-      {match.status === 'FINISHED' && !adminMode && (
-        <div className="mt-2 text-center p-3 bg-white/5 rounded-xl border border-white/5">
-          <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Tu Resultado</p>
-          <p className="text-lg font-black text-cup-cyan">ACIERTO +3 PTS</p>
+      {/* Result with real points */}
+      {match.status === 'FINISHED' && !adminMode && submitted && (
+        <div className={`mt-2 text-center p-3 rounded-xl border ${pointsInfo ? pointsInfo.bg : 'bg-white/5 border-white/10'}`}>
+          <p className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-1">
+            Tu Pronóstico: {prediction.home} - {prediction.away}
+          </p>
+          {pointsInfo ? (
+            <p className={`text-lg font-black ${pointsInfo.color}`}>
+              {pointsInfo.label} +{pointsInfo.points} PTS
+            </p>
+          ) : (
+            <p className="text-sm font-bold text-gray-400">Procesando puntos...</p>
+          )}
+        </div>
+      )}
+
+      {match.status === 'FINISHED' && !adminMode && !submitted && (
+        <div className="mt-2 text-center p-3 rounded-xl bg-white/5 border border-white/10">
+          <p className="text-[10px] text-gray-500 uppercase font-bold">No participaste en este partido</p>
         </div>
       )}
     </motion.div>
@@ -148,3 +185,4 @@ const MatchCard = ({ match, adminMode, userId }) => {
 }
 
 export default MatchCard
+
