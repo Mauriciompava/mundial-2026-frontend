@@ -67,6 +67,24 @@ const MatchCard = ({ match, adminMode, userId }) => {
     }
   }
 
+  const handleReset = () => {
+    if (window.confirm('¿Estás seguro de que deseas resetear este partido? Esto revertirá los puntos de todos los usuarios.')) {
+      fetch(`${API_BASE_URL}/api/matches/${match.id}/reset`, {
+        method: 'POST'
+      })
+      .then(res => {
+        if (!res.ok) {
+          return res.text().then(text => { throw new Error(text || 'Error en el servidor') });
+        }
+        window.location.reload();
+      })
+      .catch(err => {
+        alert('Error al resetear el partido: ' + err.message);
+        console.error(err);
+      });
+    }
+  }
+
   const pointsInfo = getPointsLabel()
 
   return (
@@ -124,6 +142,17 @@ const MatchCard = ({ match, adminMode, userId }) => {
             <input type="number" value={adminResult.away} onChange={e => setAdminResult({...adminResult, away: e.target.value})} className="w-10 h-10 bg-black/40 rounded-lg text-center font-bold" />
           </div>
           <button onClick={handleSetResult} className="w-full bg-cup-cyan text-black font-black py-2 rounded-lg text-xs uppercase">Finalizar Partido</button>
+        </div>
+      )}
+
+      {adminMode && match.status === 'FINISHED' && (
+        <div className="mt-4">
+          <button 
+            onClick={handleReset} 
+            className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/30 font-bold py-2 rounded-lg text-xs uppercase transition-colors"
+          >
+            Resetear Partido
+          </button>
         </div>
       )}
 
