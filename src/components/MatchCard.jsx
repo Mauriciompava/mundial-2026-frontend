@@ -94,7 +94,7 @@ const MatchCard = ({ match, adminMode, userId }) => {
       className={`glass-card p-6 flex flex-col gap-6 relative group border-2 ${adminMode ? 'border-cup-cyan/20' : 'border-white/5'}`}
     >
       <div className="absolute top-0 right-0 bg-white/10 px-4 py-1 rounded-bl-xl text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:bg-cup-gold group-hover:text-black transition-colors">
-        Grupo {match.homeTeam.group}
+        {match.stage}
       </div>
 
       <div className="flex justify-between items-center text-[10px] text-gray-500 font-black uppercase tracking-widest">
