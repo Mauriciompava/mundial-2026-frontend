@@ -38,7 +38,12 @@ const Navbar = ({ user, onLoginClick, onLogout }) => {
                   {user?.username?.substring(0, 1).toUpperCase() || '?'}
                 </div>
                 <div className="text-xs">
-                  <p className="font-black text-white">{user?.username || 'Ingresar'}</p>
+                  <div className="flex items-center gap-1.5">
+                    <p className="font-black text-white">{user?.username || 'Ingresar'}</p>
+                    {user?.paid && (
+                      <span className="bg-cup-gold text-black text-[8px] font-black px-1.5 py-0.5 rounded-sm shadow-sm animate-pulse">PRO</span>
+                    )}
+                  </div>
                   <p className="text-cup-gold font-bold">{(user?.totalPoints || 0).toLocaleString()} pts</p>
                 </div>
               </div>

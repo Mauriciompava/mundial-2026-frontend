@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Users, Trophy, Settings, LogOut, ShieldCheck, Database, ChevronRight, Home, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Users, Trophy, Settings, LogOut, ShieldCheck, Database, ChevronRight, Home, Menu, X, CreditCard } from 'lucide-react'
 import ParticipantManager from './ParticipantManager'
+import PaymentManager from './PaymentManager'
 import TournamentSchedule from './TournamentSchedule'
 import SystemSettings from './SystemSettings'
 import API_BASE_URL from '../api'
@@ -42,6 +43,7 @@ const AdminDashboard = ({ onLogout }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Inicio', icon: LayoutDashboard, description: 'Resumen general' },
     { id: 'users', label: 'Participantes', icon: Users, description: 'CRUD de integrantes' },
+    { id: 'payments', label: 'Pagos', icon: CreditCard, description: 'Verificar comprobantes' },
     { id: 'matches', label: 'Resultados', icon: Trophy, description: 'Actualizar marcadores' },
     { id: 'system', label: 'Sistema', icon: Settings, description: 'Configuración global' },
   ]
@@ -238,6 +240,24 @@ const AdminDashboard = ({ onLogout }) => {
                   <h2 className="text-2xl font-black italic">GESTIÓN DE <span className="text-cup-gold">PARTICIPANTES</span></h2>
                 </div>
                 <ParticipantManager />
+              </motion.div>
+            )}
+
+            {activeView === 'payments' && (
+              <motion.div
+                key="payments"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="flex items-center gap-4 mb-8">
+                  <button onClick={() => setActiveView('dashboard')} className="p-2 bg-white/5 hover:bg-white/10 rounded-lg text-gray-400 transition-all">
+                    <Home size={20} />
+                  </button>
+                  <h2 className="text-2xl font-black italic">VERIFICACIÓN DE <span className="text-cup-gold">PAGOS</span></h2>
+                </div>
+                <PaymentManager />
               </motion.div>
             )}
 

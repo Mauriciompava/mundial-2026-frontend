@@ -9,9 +9,19 @@ const MatchCard = ({ match, adminMode, userId }) => {
   const [adminResult, setAdminResult] = useState({ home: '', away: '' })
   const [pointsWon, setPointsWon] = useState(null)
   const [predictionData, setPredictionData] = useState(null)
+  const [userPaid, setUserPaid] = useState(false)
 
   useEffect(() => {
     if (userId && !adminMode) {
+      // Check payment status first
+      fetch(`${API_BASE_URL}/api/users`)
+        .then(res => res.json())
+        .then(users => {
+          const u = users.find(x => x.id === userId);
+          if (u) setUserPaid(u.paid);
+        })
+        .catch(() => {});
+
       fetch(`${API_BASE_URL}/api/predictions/check?userId=${userId}&matchId=${match.id}`)
         .then(res => res.ok ? res.json() : null)
         .then(data => {
@@ -156,34 +166,68 @@ const MatchCard = ({ match, adminMode, userId }) => {
         </div>
       )}
 
-      {/* User Prediction */}
+      {/* User Prediction Logic */}
       {!adminMode && match.status === 'SCHEDULED' && (
         <div className="mt-2">
-          {submitted ? (
-            <div className="bg-cup-gold/10 border border-cup-gold/30 p-3 rounded-xl flex items-center justify-center gap-2 text-cup-gold text-xs font-bold uppercase">
-              <CheckCircle2 size={14} /> Predicción Guardada ({prediction.home} - {prediction.away})
+          {/* CASE 1: Not Logged In - Show inputs but disable action (demonstration) */}
+          {!userId ? (
+            <div className="flex flex-col gap-3 opacity-60">
+              <div className="flex items-center justify-center gap-4">
+                <input type="number" disabled className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold" placeholder="0" />
+                <span className="text-gray-600 font-bold">X</span>
+                <input type="number" disabled className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold" placeholder="0" />
+              </div>
+              <button 
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
+                className="w-full bg-white/10 text-gray-400 font-black py-3 rounded-xl text-xs uppercase tracking-widest cursor-pointer hover:bg-white hover:text-black transition-all"
+              >
+                Ingresar para Participar
+              </button>
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center justify-center gap-4">
-                <input 
-                  type="number" 
-                  value={prediction.home}
-                  onChange={(e) => setPrediction({...prediction, home: e.target.value})}
-                  className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
-                  placeholder="0"
-                />
-                <span className="text-gray-600 font-bold">X</span>
-                <input 
-                  type="number" 
-                  value={prediction.away}
-                  onChange={(e) => setPrediction({...prediction, away: e.target.value})}
-                  className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
-                  placeholder="0"
-                />
-              </div>
-              <button onClick={handlePredict} className="w-full bg-white text-black font-black py-3 rounded-xl hover:bg-cup-gold transition-all text-xs uppercase tracking-widest">Enviar Pronóstico</button>
-            </div>
+            /* CASE 2: Logged In - Check payment status */
+            <>
+              {!userPaid ? (
+                /* Subcase: Logged in but UNPAID - Show Inactive box (as in your image) */
+                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center space-y-3 animate-fade-in">
+                  <p className="text-[10px] text-red-400 font-black uppercase tracking-widest">Cuenta Inactiva</p>
+                  <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Debes activar tu cuenta para poder realizar pronósticos.</p>
+                  <button 
+                    onClick={() => window.dispatchEvent(new CustomEvent('switch-to-payments'))}
+                    className="w-full bg-white/10 hover:bg-white/20 text-white py-3 rounded-xl text-[10px] font-black uppercase transition-all border border-white/10"
+                  >
+                    Ir a Pagos
+                  </button>
+                </div>
+              ) : submitted ? (
+                /* Subcase: Paid and Already Submitted */
+                <div className="bg-cup-gold/10 border border-cup-gold/30 p-3 rounded-xl flex items-center justify-center gap-2 text-cup-gold text-xs font-bold uppercase">
+                  <CheckCircle2 size={14} /> Predicción Guardada ({prediction.home} - {prediction.away})
+                </div>
+              ) : (
+                /* Subcase: Paid and Ready to Predict */
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-center gap-4">
+                    <input 
+                      type="number" 
+                      value={prediction.home}
+                      onChange={(e) => setPrediction({...prediction, home: e.target.value})}
+                      className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
+                      placeholder="0"
+                    />
+                    <span className="text-gray-600 font-bold">X</span>
+                    <input 
+                      type="number" 
+                      value={prediction.away}
+                      onChange={(e) => setPrediction({...prediction, away: e.target.value})}
+                      className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
+                      placeholder="0"
+                    />
+                  </div>
+                  <button onClick={handlePredict} className="w-full bg-white text-black font-black py-3 rounded-xl hover:bg-cup-gold transition-all text-xs uppercase tracking-widest">Enviar Pronóstico</button>
+                </div>
+              )}
+            </>
           )}
         </div>
       )}

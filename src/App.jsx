@@ -7,7 +7,9 @@ import AdminLogin from './components/AdminLogin'
 import AdminDashboard from './components/AdminDashboard'
 import UserLogin from './components/UserLogin'
 import UserHistory from './components/UserHistory'
-import { Trophy, Calendar, UserPlus, Settings, Users, ShieldAlert, History } from 'lucide-react'
+import PrizesAndRules from './components/PrizesAndRules'
+import PaymentGateway from './components/PaymentGateway'
+import { Trophy, Calendar, UserPlus, Settings, Users, ShieldAlert, History, ShieldCheck, CreditCard } from 'lucide-react'
 import API_BASE_URL from './api'
 
 function App() {
@@ -17,6 +19,12 @@ function App() {
   const [showLogin, setShowLogin] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [publicStats, setPublicStats] = useState({ participants: 0, matches: 0, points: 0, finished: 0 })
+
+  useEffect(() => {
+    const handleSwitchTab = () => setActiveTab('payment');
+    window.addEventListener('switch-to-payments', handleSwitchTab);
+    return () => window.removeEventListener('switch-to-payments', handleSwitchTab);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('polla_app_mode', appMode)
@@ -127,6 +135,8 @@ function App() {
           {[
             { id: 'matches', label: 'Partidos', icon: Calendar },
             { id: 'leaderboard', label: 'Ranking Global', icon: Trophy },
+            { id: 'prizes', label: 'Reglas y Premios', icon: ShieldCheck },
+            { id: 'payment', label: 'Activar Cuenta', icon: CreditCard },
             currentUser && { id: 'history', label: 'Mis Movimientos', icon: History },
           ].filter(Boolean).map((tab) => (
             <button 
@@ -138,6 +148,22 @@ function App() {
             </button>
           ))}
         </div>
+
+        {/* Unpaid User Alert CTA */}
+        {currentUser && !currentUser.paid && activeTab !== 'payment' && (
+          <div className="mb-10 animate-fade-in">
+            <button 
+              onClick={() => setActiveTab('payment')}
+              className="w-full bg-gradient-to-r from-red-500 to-pink-600 p-4 rounded-2xl flex items-center justify-center gap-3 shadow-xl shadow-red-500/20 group hover:scale-[1.02] transition-all"
+            >
+              <ShieldAlert className="text-white animate-pulse" />
+              <div className="text-left">
+                <p className="text-white font-black text-sm uppercase tracking-wider">Tu cuenta está inactiva</p>
+                <p className="text-white/80 text-[10px] font-bold uppercase">Haz clic aquí para subir tu comprobante de pago y habilitar tus pronósticos</p>
+              </div>
+            </button>
+          </div>
+        )}
 
         {/* Content Area */}
         <div className="min-h-[400px]">
@@ -173,13 +199,35 @@ function App() {
           {activeTab === 'history' && currentUser && (
             <UserHistory userId={currentUser.id} />
           )}
+
+          {activeTab === 'prizes' && (
+            <PrizesAndRules />
+          )}
+
+          {activeTab === 'payment' && (
+            currentUser ? (
+              <PaymentGateway user={currentUser} onStatusUpdate={(u) => setCurrentUser(u)} />
+            ) : (
+              <div className="glass-card p-12 text-center border-dashed border-white/10">
+                <CreditCard size={48} className="mx-auto text-gray-500 mb-4" />
+                <h3 className="text-xl font-bold mb-2">Inicia Sesión para Activar</h3>
+                <p className="text-gray-500 mb-6 max-w-sm mx-auto">Debes estar registrado para poder subir tu comprobante de pago y activar tu cuenta.</p>
+                <button 
+                  onClick={() => setShowLogin(true)}
+                  className="bg-white text-black font-black px-8 py-3 rounded-xl hover:scale-105 transition-all uppercase text-xs tracking-widest"
+                >
+                  Ingresar Ahora
+                </button>
+              </div>
+            )
+          )}
         </div>
       </main>
 
       <footer className="border-t border-white/5 py-12 mt-20 text-center">
         <div className="flex justify-center gap-8 mb-6">
           <span className="text-gray-600 text-sm hover:text-white cursor-pointer" onClick={() => setAppMode('admin-login')}>Acceso Admin</span>
-          <span className="text-gray-600 text-sm hover:text-white cursor-pointer">Reglas</span>
+          <span className="text-gray-600 text-sm hover:text-white cursor-pointer" onClick={() => setActiveTab('prizes')}>Reglas</span>
           <span className="text-gray-600 text-sm hover:text-white cursor-pointer">Soporte</span>
           <span className="text-gray-600 text-sm hover:text-white cursor-pointer">Privacidad</span>
         </div>
