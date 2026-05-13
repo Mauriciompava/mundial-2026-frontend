@@ -3,7 +3,7 @@ import { User, Bell, Search, LogOut } from 'lucide-react'
 
 const Navbar = ({ user, onLoginClick, onLogout }) => {
   return (
-    <nav className="border-b border-white/5 backdrop-blur-md sticky top-0 z-50 bg-cup-navy/80">
+    <nav className="border-b border-white/5 sticky top-0 z-50 bg-cup-navy/95 md:backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
         {/* ... Logo ... */}
         <div className="flex items-center gap-3">
