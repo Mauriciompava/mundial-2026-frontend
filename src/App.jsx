@@ -94,7 +94,7 @@ function App() {
       
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* ... Header ... */}
-        <header className="text-center mb-12 animate-fade-in pt-10">
+        <header className="text-center mb-12 pt-10">
           <div className="inline-block px-4 py-1 bg-cup-gold/20 text-cup-gold rounded-full text-xs font-bold uppercase tracking-widest mb-4 border border-cup-gold/30">
             Fase de Grupos - Camino al Mundial 2026
           </div>
@@ -107,7 +107,7 @@ function App() {
         </header>
 
         {/* Global Stats Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
             { label: 'Participantes', value: publicStats.participants.toLocaleString(), icon: Users },
             { label: 'Partidos Jugados', value: `${publicStats.finished} de ${publicStats.matches}`, icon: Calendar },
@@ -117,14 +117,14 @@ function App() {
             <div 
               key={i} 
               onClick={stat.action}
-              className={`glass-card p-4 flex items-center gap-4 border-white/5 cursor-pointer hover:bg-white/10 transition-all ${stat.label === 'Modo Maestro' ? 'hover:border-cup-gold/50' : ''}`}
+              className={`glass-card p-5 flex items-center gap-4 border-white/5 cursor-pointer hover:bg-white/10 transition-all ${stat.label === 'Modo Maestro' ? 'hover:border-cup-gold/50' : ''}`}
             >
-              <div className="p-3 bg-white/5 rounded-lg">
+              <div className="p-3 bg-white/5 rounded-lg shrink-0">
                 <stat.icon size={20} className={stat.label === 'Modo Maestro' ? 'text-cup-gold' : 'text-gray-400'} />
               </div>
-              <div>
-                <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider">{stat.label}</p>
-                <p className="text-lg font-black">{stat.value}</p>
+              <div className="min-w-0">
+                <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider truncate">{stat.label}</p>
+                <p className="text-lg font-black truncate">{stat.value}</p>
               </div>
             </div>
           ))}
