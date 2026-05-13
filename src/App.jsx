@@ -98,7 +98,7 @@ function App() {
           <div className="inline-block px-4 py-1 bg-cup-gold/20 text-cup-gold rounded-full text-xs font-bold uppercase tracking-widest mb-4 border border-cup-gold/30">
             Fase de Grupos - Camino al Mundial 2026
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-8xl font-black mb-4 tracking-tighter">
+          <h1 className="text-3xl sm:text-6xl md:text-8xl font-black mb-4 tracking-tighter leading-none">
             POLLA <span className="text-transparent bg-clip-text bg-gradient-to-r from-cup-gold to-yellow-200">PRO+</span>
           </h1>
           <p className="text-gray-400 text-sm sm:text-lg md:text-xl max-w-2xl mx-auto px-2">
@@ -107,7 +107,7 @@ function App() {
         </header>
 
         {/* Global Stats Bar */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
             { label: 'Participantes', value: publicStats.participants.toLocaleString(), icon: Users },
             { label: 'Partidos Jugados', value: `${publicStats.finished} de ${publicStats.matches}`, icon: Calendar },
@@ -131,7 +131,7 @@ function App() {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap justify-center gap-4 mb-10">
+        <div className="grid grid-cols-2 sm:flex sm:flex-wrap justify-center gap-3 sm:gap-4 mb-10">
           {[
             { id: 'matches', label: 'Partidos', icon: Calendar },
             { id: 'leaderboard', label: 'Ranking Global', icon: Trophy },
@@ -142,9 +142,9 @@ function App() {
             <button 
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`flex items-center gap-2 px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 text-xs sm:text-base ${activeTab === tab.id ? 'bg-white text-black font-bold scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
+              className={`flex items-center justify-center gap-2 px-3 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl transition-all duration-300 text-[10px] sm:text-base ${activeTab === tab.id ? 'bg-white text-black font-bold scale-105 shadow-[0_0_20px_rgba(255,255,255,0.2)]' : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
             >
-              <tab.icon size={18} className="sm:w-5 sm:h-5" /> {tab.label}
+              <tab.icon size={16} className="sm:w-5 sm:h-5 shrink-0" /> <span className="truncate">{tab.label}</span>
             </button>
           ))}
         </div>
