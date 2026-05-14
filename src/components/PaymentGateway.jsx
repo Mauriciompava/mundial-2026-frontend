@@ -24,8 +24,8 @@ const PaymentGateway = ({ user, onStatusUpdate }) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/users/${user.id}/upload-receipt`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(file)
+        headers: { 'Content-Type': 'text/plain' },
+        body: file
       })
       if (response.ok) {
         const updatedUser = await response.json()

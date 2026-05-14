@@ -5,7 +5,7 @@ import API_BASE_URL from '../api'
 const PaymentManager = () => {
   const [pendingUsers, setPendingUsers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [selectedReceipt, setSelectedReceipt] = useState(null)
+  const [selectedUser, setSelectedUser] = useState(null)
 
   useEffect(() => {
     fetchPendingPayments()
@@ -32,6 +32,7 @@ const PaymentManager = () => {
       })
       if (response.ok) {
         setPendingUsers(pendingUsers.filter(u => u.id !== userId))
+        setSelectedUser(null)
       }
     } catch (error) {
       console.error('Error approving payment:', error)
@@ -43,10 +44,11 @@ const PaymentManager = () => {
       try {
         await fetch(`${API_BASE_URL}/api/users/${userId}/upload-receipt`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(null)
+          headers: { 'Content-Type': 'text/plain' },
+          body: ''
         })
         fetchPendingPayments()
+        setSelectedUser(null)
       } catch (error) {
         console.error('Error rejecting payment:', error)
       }
@@ -100,7 +102,7 @@ const PaymentManager = () => {
                   <td className="px-6 py-4 text-xs text-gray-500">{u.email}</td>
                   <td className="px-6 py-4">
                     <button 
-                      onClick={() => setSelectedReceipt(u.paymentReceipt)}
+                      onClick={() => setSelectedUser(u)}
                       className="flex items-center gap-2 text-cup-cyan hover:text-white transition-colors text-xs font-bold uppercase"
                     >
                       <Eye size={14} /> Ver Imagen
@@ -130,21 +132,66 @@ const PaymentManager = () => {
         </table>
       </div>
 
-      {/* Image Modal */}
-      {selectedReceipt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/90 backdrop-blur-md animate-fade-in">
-          <button 
-            onClick={() => setSelectedReceipt(null)}
-            className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 rounded-full transition-all"
-          >
-            <X size={24} />
-          </button>
-          <div className="max-w-4xl max-h-full overflow-hidden bg-white rounded-2xl shadow-2xl">
-            <img 
-              src={selectedReceipt} 
-              alt="Comprobante de Pago" 
-              className="max-w-full max-h-[80vh] object-contain"
-            />
+      {/* Image Modal Mejorado con Acciones */}
+      {selectedUser && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-black/95 backdrop-blur-xl animate-fade-in">
+          {/* Close Backdrop */}
+          <div className="absolute inset-0" onClick={() => setSelectedUser(null)} />
+          
+          <div className="relative w-full max-w-5xl max-h-[90vh] bg-cup-navy border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col z-10">
+            {/* Header del Modal */}
+            <div className="p-4 border-b border-white/5 bg-black/40 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <CreditCard className="text-cup-gold" size={18} />
+                <h3 className="text-xs font-black uppercase tracking-widest text-white">Revisando pago de: <span className="text-cup-gold">{selectedUser.username}</span></h3>
+              </div>
+              <div className="flex items-center gap-4">
+                <a 
+                  href={selectedUser.paymentReceipt} 
+                  target="_blank" 
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-[10px] font-black uppercase text-cup-cyan hover:text-white transition-colors"
+                >
+                  <ExternalLink size={14} /> Abrir Tamaño Completo
+                </a>
+                <button 
+                  onClick={() => setSelectedUser(null)}
+                  className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+            </div>
+
+            {/* Contenedor de Imagen con Scroll */}
+            <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-black/20 custom-scrollbar">
+              <div className="flex justify-center">
+                <img 
+                  src={selectedUser.paymentReceipt} 
+                  alt="Comprobante de Pago" 
+                  className="w-full h-auto max-w-3xl rounded-xl shadow-2xl border border-white/5"
+                />
+              </div>
+            </div>
+
+            {/* Footer con Acciones Rápidas */}
+            <div className="p-6 bg-black/60 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">¿Este comprobante es válido?</p>
+              <div className="flex items-center gap-3 w-full md:w-auto">
+                <button 
+                  onClick={() => handleReject(selectedUser.id)}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border border-red-500/30 text-red-500 hover:bg-red-500 hover:text-white rounded-xl font-bold text-xs uppercase transition-all"
+                >
+                  <X size={16} /> Rechazar Comprobante
+                </button>
+                <button 
+                  onClick={() => handleApprove(selectedUser.id)}
+                  className="flex-1 md:flex-none flex items-center justify-center gap-2 px-8 py-3 bg-green-500 text-black rounded-xl font-black text-xs uppercase hover:scale-105 shadow-lg shadow-green-500/20 transition-all"
+                >
+                  <Check size={16} /> Aprobar y Activar Usuario
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
