@@ -76,7 +76,7 @@ const PaymentGateway = ({ user, onStatusUpdate }) => {
                 <img 
                   src="/nequi_qr.png" 
                   alt="QR Nequi" 
-                  className="w-full h-full object-cover scale-[1.12] transition-transform duration-500 group-hover:scale-[1.2]" 
+                  className="w-full h-full object-contain p-2 transition-transform duration-500 group-hover:scale-105" 
                 />
               </div>
               <p className="text-center text-sm font-black uppercase text-pink-500 tracking-widest">Nequi</p>
