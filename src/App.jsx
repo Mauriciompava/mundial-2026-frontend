@@ -13,9 +13,23 @@ import { Trophy, Calendar, UserPlus, Settings, Users, ShieldAlert, History, Shie
 import API_BASE_URL from './api'
 
 function App() {
-  const [appMode, setAppMode] = useState(localStorage.getItem('polla_app_mode') || 'public') 
+  const [appMode, setAppMode] = useState(() => {
+    try {
+      return localStorage.getItem('polla_app_mode') || 'public'
+    } catch (e) {
+      return 'public'
+    }
+  }) 
   const [activeTab, setActiveTab] = useState('matches')
-  const [currentUser, setCurrentUser] = useState(JSON.parse(localStorage.getItem('polla_user')) || null)
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('polla_user')
+      return saved ? JSON.parse(saved) : null
+    } catch (e) {
+      console.error("Error parsing user from localStorage:", e)
+      return null
+    }
+  })
   const [showLogin, setShowLogin] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [publicStats, setPublicStats] = useState({ participants: 0, matches: 0, points: 0, finished: 0 })
@@ -109,9 +123,9 @@ function App() {
         {/* Global Stats Bar */}
         <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
           {[
-            { label: 'Participantes', value: publicStats.participants.toLocaleString(), icon: Users },
-            { label: 'Partidos Jugados', value: `${publicStats.finished} de ${publicStats.matches}`, icon: Calendar },
-            { label: 'Puntos Repartidos', value: publicStats.points.toLocaleString(), icon: Trophy },
+            { label: 'Participantes', value: (publicStats?.participants || 0).toLocaleString(), icon: Users },
+            { label: 'Partidos Jugados', value: `${publicStats?.finished || 0} de ${publicStats?.matches || 0}`, icon: Calendar },
+            { label: 'Puntos Repartidos', value: (publicStats?.points || 0).toLocaleString(), icon: Trophy },
             { label: 'Modo Maestro', value: 'Acceso Admin', icon: ShieldAlert, action: () => setAppMode('admin-login') },
           ].map((stat, i) => (
             <div 
@@ -188,7 +202,7 @@ function App() {
                   </button>
                 </div>
               )}
-              <TournamentSchedule adminMode={false} userId={currentUser?.id} />
+              <TournamentSchedule adminMode={false} user={currentUser} />
             </>
           )}
           

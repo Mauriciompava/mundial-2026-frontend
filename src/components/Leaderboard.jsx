@@ -77,7 +77,7 @@ const Leaderboard = ({ onUserSelect }) => {
                 {/* Avatar */}
                 <div className="relative shrink-0">
                   <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-lg border border-white/10">
-                    {player.username.substring(0, 2).toUpperCase()}
+                    {player.username?.substring(0, 2).toUpperCase() || '??'}
                   </div>
                   <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-cup-navy border border-white/10 rounded-full flex items-center justify-center">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />

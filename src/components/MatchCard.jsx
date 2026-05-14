@@ -3,7 +3,8 @@ import { CheckCircle2, Clock, Swords } from 'lucide-react'
 import { motion } from 'framer-motion'
 import API_BASE_URL from '../api'
 
-const MatchCard = ({ match, adminMode, userId }) => {
+const MatchCard = ({ match, adminMode, user }) => {
+  const userId = user?.id;
   const [prediction, setPrediction] = useState({ home: '', away: '' })
   const [submitted, setSubmitted] = useState(false)
   const [adminResult, setAdminResult] = useState({ home: '', away: '' })
@@ -13,14 +14,8 @@ const MatchCard = ({ match, adminMode, userId }) => {
 
   useEffect(() => {
     if (userId && !adminMode) {
-      // Check payment status first
-      fetch(`${API_BASE_URL}/api/users`)
-        .then(res => res.json())
-        .then(users => {
-          const u = users.find(x => x.id === userId);
-          if (u) setUserPaid(u.paid);
-        })
-        .catch(() => {});
+      // Use the paid status from the passed user object
+      setUserPaid(!!user?.paid);
 
       fetch(`${API_BASE_URL}/api/predictions/check?userId=${userId}&matchId=${match.id}`)
         .then(res => res.ok ? res.json() : null)
@@ -36,7 +31,7 @@ const MatchCard = ({ match, adminMode, userId }) => {
         })
         .catch(() => {}) 
     }
-  }, [userId, match.id, adminMode])
+  }, [userId, match.id, adminMode, user?.paid])
 
   const getPointsLabel = () => {
     if (pointsWon === null || pointsWon === undefined) return null

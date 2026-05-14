@@ -4,7 +4,7 @@ import { Search, Filter, Calendar as CalendarIcon, ChevronRight } from 'lucide-r
 import MatchCard from './MatchCard'
 import API_BASE_URL from '../api'
 
-const TournamentSchedule = ({ adminMode, userId }) => {
+const TournamentSchedule = ({ adminMode, user }) => {
   const [matches, setMatches] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
@@ -121,7 +121,7 @@ const TournamentSchedule = ({ adminMode, userId }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMatches.length > 0 ? (
           filteredMatches.map(match => (
-            <MatchCard key={match.id} match={match} adminMode={adminMode} userId={userId} />
+            <MatchCard key={match.id} match={match} adminMode={adminMode} user={user} />
           ))
         ) : (
           <div className="col-span-full py-20 text-center glass-card border-dashed border-white/10">
