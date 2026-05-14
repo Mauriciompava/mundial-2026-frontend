@@ -76,8 +76,8 @@ const Leaderboard = ({ onUserSelect }) => {
 
                 {/* Avatar */}
                 <div className="relative shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-lg border border-white/10">
-                    {player.username?.substring(0, 2).toUpperCase() || '??'}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-2xl border border-white/10 shadow-inner">
+                    {player.championTeam?.flagUrl || (player.username?.substring(0, 1).toUpperCase() || '?')}
                   </div>
                   <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-cup-navy border border-white/10 rounded-full flex items-center justify-center">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
@@ -87,7 +87,7 @@ const Leaderboard = ({ onUserSelect }) => {
                 {/* Info - takes remaining space */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <p className="text-sm sm:text-base font-bold truncate">{player.fullName || player.username}</p>
+                    <p className="text-sm sm:text-base font-bold truncate">{player.username}</p>
                     {player.championTeam && (
                       <span className="inline-flex items-center gap-1 bg-cup-gold/10 px-2 py-0.5 rounded text-[9px] sm:text-[10px] text-cup-gold border border-cup-gold/20 font-black uppercase shrink-0">
                         <Trophy size={10} />
@@ -95,9 +95,6 @@ const Leaderboard = ({ onUserSelect }) => {
                       </span>
                     )}
                   </div>
-                  <p className="text-[11px] text-gray-500 truncate hidden sm:flex items-center gap-1 mt-0.5">
-                    <Mail size={10} /> {player.email}
-                  </p>
                 </div>
 
                 {/* Points - always visible */}
