@@ -72,8 +72,12 @@ const PaymentGateway = ({ user, onStatusUpdate }) => {
 
           <div className="flex justify-center mb-8">
             <div className="space-y-3 w-64">
-              <div className="bg-white p-4 rounded-3xl aspect-square flex items-center justify-center overflow-hidden border-8 border-white/5 shadow-2xl shadow-pink-500/10">
-                <img src="/nequi_qr.png" alt="QR Nequi" className="w-full h-full object-contain" />
+              <div className="bg-white p-0 rounded-3xl aspect-square flex items-center justify-center overflow-hidden border-8 border-white/5 shadow-2xl shadow-pink-500/10 group">
+                <img 
+                  src="/nequi_qr.png" 
+                  alt="QR Nequi" 
+                  className="w-full h-full object-cover scale-[1.12] transition-transform duration-500 group-hover:scale-[1.2]" 
+                />
               </div>
               <p className="text-center text-sm font-black uppercase text-pink-500 tracking-widest">Nequi</p>
             </div>
