@@ -8,7 +8,6 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
   const [teams, setTeams] = useState([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loading, setLoading] = useState(true)
-  const [isSearching, setIsSearching] = useState(false)
 
   useEffect(() => {
     fetch(`${API_BASE_URL}/api/teams`)
@@ -21,7 +20,7 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
 
   const filteredTeams = searchTerm 
     ? teams.filter(t => t.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    : teams.slice(0, 24) // Show more default suggestions
+    : teams
 
   return (
     <div className="glass-card p-4 sm:p-6 mb-8 relative overflow-hidden">
@@ -52,7 +51,6 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
               className="bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3 w-full md:w-64 focus:bg-white/10 focus:border-cup-gold outline-none transition-all font-medium"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              onFocus={() => setIsSearching(true)}
             />
             {searchTerm && (
               <button 
@@ -67,35 +65,37 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
       </div>
 
       {!currentChampion && (
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-12 gap-3">
-          {loading ? (
-            Array(12).fill(0).map((_, i) => (
-              <div key={i} className="aspect-square bg-white/5 rounded-xl animate-pulse"></div>
-            ))
-          ) : (
-            <AnimatePresence mode='popLayout'>
-              {filteredTeams.map(team => (
-                <motion.button
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  key={team.id}
-                  onClick={() => onPick(team)}
-                  className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border-2 transition-all relative group border-white/5 bg-white/5 hover:border-white/20 hover:scale-105`}
-                >
-                  <img 
-                    src={getFlagUrl(team)} 
-                    alt={team.name}
-                    className="w-12 h-8 object-cover rounded-sm shadow-sm transition-transform group-hover:scale-110" 
-                  />
-                  <span className="text-[8px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white truncate w-full px-1 text-center">
-                    {team.name}
-                  </span>
-                </motion.button>
-              ))}
-            </AnimatePresence>
-          )}
+        <div className="max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-3 pb-4">
+            {loading ? (
+              Array(12).fill(0).map((_, i) => (
+                <div key={i} className="aspect-square bg-white/5 rounded-xl animate-pulse"></div>
+              ))
+            ) : (
+              <AnimatePresence mode='popLayout'>
+                {filteredTeams.map(team => (
+                  <motion.button
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    key={team.id}
+                    onClick={() => onPick(team)}
+                    className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border-2 transition-all relative group border-white/5 bg-white/5 hover:border-white/20 hover:scale-105`}
+                  >
+                    <img 
+                      src={getFlagUrl(team)} 
+                      alt={team.name}
+                      className="w-10 h-7 sm:w-12 sm:h-8 object-cover rounded-sm shadow-sm transition-transform group-hover:scale-110" 
+                    />
+                    <span className="text-[7px] sm:text-[8px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white truncate w-full px-1 text-center">
+                      {team.name}
+                    </span>
+                  </motion.button>
+                ))}
+              </AnimatePresence>
+            )}
+          </div>
         </div>
       )}
 

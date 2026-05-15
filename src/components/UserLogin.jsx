@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Lock, LogIn, Loader2, AlertCircle, Trophy, UserPlus, User as UserIcon } from 'lucide-react'
+import { Mail, Lock, LogIn, Loader2, AlertCircle, Trophy, UserPlus, User as UserIcon, ShieldCheck } from 'lucide-react'
 import API_BASE_URL from '../api'
 
-const UserLogin = ({ onLogin, onCancel }) => {
+const UserLogin = ({ onLogin, onCancel, onAdminAccess }) => {
   const [isRegister, setIsRegister] = useState(false)
   const [formData, setFormData] = useState({ username: '', email: '', password: '' })
   const [loading, setLoading] = useState(false)
@@ -140,6 +140,16 @@ const UserLogin = ({ onLogin, onCancel }) => {
               >
                 Cerrar Ventana
               </button>
+
+              <div className="pt-6 border-t border-white/5 flex justify-center">
+                <button 
+                  type="button"
+                  onClick={onAdminAccess}
+                  className="flex items-center gap-2 text-[9px] font-black text-cup-gold/40 hover:text-cup-gold transition-all uppercase tracking-[0.2em] group"
+                >
+                  <ShieldCheck size={14} className="group-hover:rotate-12 transition-transform" /> Acceso Maestro
+                </button>
+              </div>
             </div>
           </div>
         </form>

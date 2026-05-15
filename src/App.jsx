@@ -10,6 +10,7 @@ import UserHistory from './components/UserHistory'
 import PrizesAndRules from './components/PrizesAndRules'
 import PaymentGateway from './components/PaymentGateway'
 import ConfirmModal from './components/ConfirmModal'
+import LegalTerms from './components/LegalTerms'
 import { Trophy, Calendar, UserPlus, Settings, Users, ShieldAlert, History, ShieldCheck, CreditCard } from 'lucide-react'
 import API_BASE_URL from './api'
 
@@ -41,6 +42,14 @@ function App() {
     const handleSwitchTab = () => setActiveTab('payment');
     window.addEventListener('switch-to-payments', handleSwitchTab);
     return () => window.removeEventListener('switch-to-payments', handleSwitchTab);
+  }, []);
+
+  // Secret Admin Access via URL: /master
+  useEffect(() => {
+    if (window.location.pathname === '/master') {
+      setAppMode('admin-login');
+      window.history.replaceState({}, '', '/');
+    }
   }, []);
 
   useEffect(() => {
@@ -116,7 +125,13 @@ function App() {
     <div className="min-h-screen w-full text-white font-sans bg-cup-navy">
       <Navbar user={currentUser} onLoginClick={() => setShowLogin(true)} onLogout={handleLogout} />
       
-      {showLogin && <UserLogin onLogin={handleUserLogin} onCancel={() => setShowLogin(false)} />}
+      {showLogin && (
+        <UserLogin 
+          onLogin={handleUserLogin} 
+          onCancel={() => setShowLogin(false)} 
+          onAdminAccess={() => setAppMode('admin-login')}
+        />
+      )}
       
       <ConfirmModal 
         isOpen={showConfirmModal}
@@ -142,20 +157,18 @@ function App() {
         </header>
 
         {/* Global Stats Bar */}
-        <div className="flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-12 max-w-5xl mx-auto">
           {[
             { label: 'Participantes', value: (publicStats?.participants || 0).toLocaleString(), icon: Users },
             { label: 'Partidos Jugados', value: `${publicStats?.finished || 0} de ${publicStats?.matches || 0}`, icon: Calendar },
             { label: 'Puntos Repartidos', value: (publicStats?.points || 0).toLocaleString(), icon: Trophy },
-            { label: 'Modo Maestro', value: 'Acceso Admin', icon: ShieldAlert, action: () => setAppMode('admin-login') },
           ].map((stat, i) => (
             <div 
               key={i} 
-              onClick={stat.action}
-              className={`glass-card p-5 flex items-center gap-4 border-white/5 cursor-pointer hover:bg-white/10 transition-all ${stat.label === 'Modo Maestro' ? 'hover:border-cup-gold/50' : ''}`}
+              className="glass-card p-5 flex items-center gap-4 border-white/5 transition-all"
             >
               <div className="p-3 bg-white/5 rounded-lg shrink-0">
-                <stat.icon size={20} className={stat.label === 'Modo Maestro' ? 'text-cup-gold' : 'text-gray-400'} />
+                <stat.icon size={20} className="text-gray-400" />
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] uppercase font-bold text-gray-500 tracking-wider truncate">{stat.label}</p>
@@ -256,15 +269,18 @@ function App() {
               </div>
             )
           )}
+
+          {activeTab === 'legal' && (
+            <LegalTerms onBack={() => setActiveTab('matches')} />
+          )}
         </div>
       </main>
 
       <footer className="border-t border-white/5 py-12 mt-20 text-center">
         <div className="flex justify-center gap-8 mb-6">
-          <span className="text-gray-600 text-sm hover:text-white cursor-pointer" onClick={() => setAppMode('admin-login')}>Acceso Admin</span>
           <span className="text-gray-600 text-sm hover:text-white cursor-pointer" onClick={() => setActiveTab('prizes')}>Reglas</span>
           <span className="text-gray-600 text-sm hover:text-white cursor-pointer">Soporte</span>
-          <span className="text-gray-600 text-sm hover:text-white cursor-pointer">Privacidad</span>
+          <span className="text-gray-600 text-sm hover:text-white cursor-pointer" onClick={() => setActiveTab('legal')}>Privacidad</span>
         </div>
         <p className="text-gray-500 text-xs">© 2026 Mundial Polla Pro - Diseñado para Impactar.</p>
       </footer>

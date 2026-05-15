@@ -9,6 +9,7 @@ const TournamentSchedule = ({ adminMode, user }) => {
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('ALL')
   const [phaseFilter, setPhaseFilter] = useState('ALL')
+  const [knockoutStage, setKnockoutStage] = useState('ALL')
   const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
@@ -45,18 +46,36 @@ const TournamentSchedule = ({ adminMode, user }) => {
 
   const filteredMatches = matches.filter(m => {
     const stage = m.stage || ''
-    const matchesFilter = filter === 'ALL' || m.homeTeam.group === filter
+    
+    // Phase filtering logic
     const matchesPhase = phaseFilter === 'ALL' || 
                          (phaseFilter === 'GROUPS' && stage.includes('Grupo')) ||
                          (phaseFilter === 'KNOCKOUT' && !stage.includes('Grupo'))
+    
+    if (!matchesPhase) return false
+
+    // Group filtering logic (if in Groups phase)
+    if (phaseFilter === 'GROUPS' && filter !== 'ALL' && m.homeTeam.group !== filter) {
+      return false
+    }
+
+    // Knockout stage filtering logic (if in Knockout phase)
+    if (phaseFilter === 'KNOCKOUT' && knockoutStage !== 'ALL') {
+      // Precise check for Final vs Semifinal
+      if (knockoutStage === 'Final') {
+        if (stage !== 'Final') return false
+      } else {
+        if (!stage.toLowerCase().includes(knockoutStage.toLowerCase())) {
+          return false
+        }
+      }
+    }
     
     const homeName = m.homeTeam?.name?.toLowerCase() || ''
     const awayName = m.awayTeam?.name?.toLowerCase() || ''
     const search = searchTerm.toLowerCase()
     
-    const matchesSearch = homeName.includes(search) || awayName.includes(search)
-    
-    return matchesFilter && matchesPhase && matchesSearch
+    return homeName.includes(search) || awayName.includes(search)
   })
 
   const groups = ['ALL', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L']
@@ -64,6 +83,15 @@ const TournamentSchedule = ({ adminMode, user }) => {
     { id: 'ALL', label: 'Todo' },
     { id: 'GROUPS', label: 'Fase de Grupos' },
     { id: 'KNOCKOUT', label: 'Eliminatorias' }
+  ]
+
+  const knockoutStages = [
+    { id: 'ALL', label: 'Todo Eliminatorias' },
+    { id: 'Dieciseisavos', label: 'Dieciseisavos' },
+    { id: 'Octavos', label: 'Octavos' },
+    { id: 'Cuartos', label: 'Cuartos' },
+    { id: 'Semifinal', label: 'Semifinal' },
+    { id: 'Final', label: 'Final' }
   ]
 
   if (loading) return (
@@ -88,11 +116,15 @@ const TournamentSchedule = ({ adminMode, user }) => {
             />
           </div>
 
-          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto">
+          <div className="flex bg-white/5 p-1 rounded-xl border border-white/10 w-full md:w-auto overflow-x-auto scrollbar-hide">
             {phases.map(p => (
               <button
                 key={p.id}
-                onClick={() => setPhaseFilter(p.id)}
+                onClick={() => {
+                  setPhaseFilter(p.id)
+                  setFilter('ALL')
+                  setKnockoutStage('ALL')
+                }}
                 className={`flex-1 md:flex-none px-3 sm:px-6 py-2.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest transition-all whitespace-nowrap ${phaseFilter === p.id ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
               >
                 {p.label}
@@ -101,20 +133,38 @@ const TournamentSchedule = ({ adminMode, user }) => {
           </div>
         </div>
 
-        {phaseFilter !== 'KNOCKOUT' && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide border-t border-white/5 pt-4">
-            <Filter size={16} className="text-gray-500 mr-2 shrink-0" />
-            {groups.map(g => (
-              <button
-                key={g}
-                onClick={() => setFilter(g)}
-                className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all shrink-0 ${filter === g ? 'bg-cup-gold text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
-              >
-                {g === 'ALL' ? 'Todos los Grupos' : `Grupo ${g}`}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Dynamic Sub-filters */}
+        <div className="border-t border-white/5 pt-4">
+          {phaseFilter === 'GROUPS' && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <Filter size={16} className="text-gray-500 mr-2 shrink-0" />
+              {groups.map(g => (
+                <button
+                  key={g}
+                  onClick={() => setFilter(g)}
+                  className={`px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all shrink-0 ${filter === g ? 'bg-cup-gold text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                >
+                  {g === 'ALL' ? 'Todos los Grupos' : `Grupo ${g}`}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {phaseFilter === 'KNOCKOUT' && (
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
+              <Filter size={16} className="text-gray-500 mr-2 shrink-0" />
+              {knockoutStages.map(s => (
+                <button
+                  key={s.id}
+                  onClick={() => setKnockoutStage(s.id)}
+                  className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest transition-all shrink-0 ${knockoutStage === s.id ? 'bg-cup-gold text-black' : 'bg-white/5 text-gray-400 hover:bg-white/10'}`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Grid */}
