@@ -19,12 +19,12 @@ const TournamentSchedule = ({ adminMode, user }) => {
           id: m.id,
           homeTeam: { 
             name: m.homeTeam?.name || 'TBD', 
-            flag: m.homeTeam?.flagUrl || '🏳️', 
+            flagUrl: m.homeTeam?.flagUrl || '', 
             group: m.homeTeam?.groupName || '' 
           },
           awayTeam: { 
             name: m.awayTeam?.name || 'TBD', 
-            flag: m.awayTeam?.flagUrl || '🏳️', 
+            flagUrl: m.awayTeam?.flagUrl || '', 
             group: m.awayTeam?.groupName || '' 
           },
           date: new Date(m.matchDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
@@ -93,7 +93,7 @@ const TournamentSchedule = ({ adminMode, user }) => {
               <button
                 key={p.id}
                 onClick={() => setPhaseFilter(p.id)}
-                className={`flex-1 md:flex-none px-6 py-2 rounded-lg text-xs font-bold uppercase tracking-widest transition-all ${phaseFilter === p.id ? 'bg-white text-black' : 'text-gray-500 hover:text-white'}`}
+                className={`flex-1 md:flex-none px-3 sm:px-6 py-2.5 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider sm:tracking-widest transition-all whitespace-nowrap ${phaseFilter === p.id ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
               >
                 {p.label}
               </button>

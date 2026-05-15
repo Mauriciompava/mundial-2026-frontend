@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Trophy, Check, Search, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import API_BASE_URL from '../api'
+import { getFlagUrl } from '../utils/flagUtils'
 
 const ChampionPicker = ({ currentChampion, onPick }) => {
   const [teams, setTeams] = useState([])
@@ -83,7 +84,11 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
                   onClick={() => onPick(team)}
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-1 border-2 transition-all relative group border-white/5 bg-white/5 hover:border-white/20 hover:scale-105`}
                 >
-                  <span className="text-3xl drop-shadow-md">{team.flagUrl}</span>
+                  <img 
+                    src={getFlagUrl(team)} 
+                    alt={team.name}
+                    className="w-12 h-8 object-cover rounded-sm shadow-sm transition-transform group-hover:scale-110" 
+                  />
                   <span className="text-[8px] font-black uppercase tracking-tighter text-gray-400 group-hover:text-white truncate w-full px-1 text-center">
                     {team.name}
                   </span>
@@ -104,7 +109,11 @@ const ChampionPicker = ({ currentChampion, onPick }) => {
              <Check className="text-cup-gold" size={24} opacity={0.2} />
           </div>
           <div className="relative shrink-0">
-            <span className="text-5xl sm:text-8xl drop-shadow-2xl">{currentChampion.flagUrl}</span>
+            <img 
+              src={getFlagUrl(currentChampion)} 
+              alt={currentChampion.name}
+              className="w-20 h-14 sm:w-32 sm:h-24 object-cover rounded-xl shadow-2xl border-4 border-white/10" 
+            />
             <div className="absolute -bottom-1 -right-1 sm:-bottom-2 sm:-right-2 bg-cup-gold text-black p-1.5 sm:p-2 rounded-lg sm:rounded-xl shadow-lg">
               <Trophy size={14} fill="currentColor" />
             </div>

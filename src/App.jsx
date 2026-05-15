@@ -9,6 +9,7 @@ import UserLogin from './components/UserLogin'
 import UserHistory from './components/UserHistory'
 import PrizesAndRules from './components/PrizesAndRules'
 import PaymentGateway from './components/PaymentGateway'
+import ConfirmModal from './components/ConfirmModal'
 import { Trophy, Calendar, UserPlus, Settings, Users, ShieldAlert, History, ShieldCheck, CreditCard } from 'lucide-react'
 import API_BASE_URL from './api'
 
@@ -31,6 +32,8 @@ function App() {
     }
   })
   const [showLogin, setShowLogin] = useState(false)
+  const [showConfirmModal, setShowConfirmModal] = useState(false)
+  const [pendingTeam, setPendingTeam] = useState(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [publicStats, setPublicStats] = useState({ participants: 0, matches: 0, points: 0, finished: 0 })
 
@@ -72,10 +75,19 @@ function App() {
   }, [])
 
   const handlePickChampion = (team) => {
-    setCurrentUser({ ...currentUser, championTeam: team })
-    fetch(`${API_BASE_URL}/api/users/${currentUser.id}/champion?teamId=${team.id}`, {
-      method: 'POST'
-    })
+    setPendingTeam(team)
+    setShowConfirmModal(true)
+  }
+
+  const confirmChampion = () => {
+    if (pendingTeam) {
+      setCurrentUser({ ...currentUser, championTeam: pendingTeam })
+      fetch(`${API_BASE_URL}/api/users/${currentUser.id}/champion?teamId=${pendingTeam.id}`, {
+        method: 'POST'
+      })
+      setShowConfirmModal(false)
+      setPendingTeam(null)
+    }
   }
 
   const handleUserLogin = (user) => {
@@ -106,6 +118,15 @@ function App() {
       
       {showLogin && <UserLogin onLogin={handleUserLogin} onCancel={() => setShowLogin(false)} />}
       
+      <ConfirmModal 
+        isOpen={showConfirmModal}
+        title="¿Confirmar Campeón?"
+        message="Esta elección es única para todo el torneo y no podrá ser modificada una vez confirmada. ¿Estás seguro de tu candidato?"
+        team={pendingTeam}
+        onConfirm={confirmChampion}
+        onCancel={() => setShowConfirmModal(false)}
+      />
+
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* ... Header ... */}
         <header className="text-center mb-12 pt-10">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { CheckCircle2, Clock, Swords } from 'lucide-react'
 import { motion } from 'framer-motion'
 import API_BASE_URL from '../api'
+import { getFlagUrl } from '../utils/flagUtils'
 
 const MatchCard = ({ match, adminMode, user }) => {
   const userId = user?.id;
@@ -116,7 +117,11 @@ const MatchCard = ({ match, adminMode, user }) => {
 
       <div className="flex items-center justify-between gap-4 py-4">
         <div className="flex flex-col items-center gap-2 flex-1">
-          <div className="text-4xl sm:text-5xl drop-shadow-xl">{match.homeTeam.flag}</div>
+          <img 
+            src={getFlagUrl(match.homeTeam)} 
+            alt={match.homeTeam.name}
+            className="w-12 h-8 sm:w-16 sm:h-10 object-cover rounded-md shadow-lg border border-white/10" 
+          />
           <span className="font-black text-[10px] sm:text-xs text-center tracking-tighter uppercase line-clamp-1">{match.homeTeam.name}</span>
         </div>
 
@@ -133,7 +138,11 @@ const MatchCard = ({ match, adminMode, user }) => {
         </div>
 
         <div className="flex flex-col items-center gap-2 flex-1">
-          <div className="text-4xl sm:text-5xl drop-shadow-xl">{match.awayTeam.flag}</div>
+          <img 
+            src={getFlagUrl(match.awayTeam)} 
+            alt={match.awayTeam.name}
+            className="w-12 h-8 sm:w-16 sm:h-10 object-cover rounded-md shadow-lg border border-white/10" 
+          />
           <span className="font-black text-[10px] sm:text-xs text-center tracking-tighter uppercase line-clamp-1">{match.awayTeam.name}</span>
         </div>
       </div>

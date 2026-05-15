@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Medal, ArrowUp, Minus, Star, Loader2, Mail, Phone, Trophy } from 'lucide-react'
 import API_BASE_URL from '../api'
+import { getFlagUrl } from '../utils/flagUtils'
 
 const Leaderboard = ({ onUserSelect }) => {
   const [players, setPlayers] = useState([])
@@ -76,8 +77,16 @@ const Leaderboard = ({ onUserSelect }) => {
 
                 {/* Avatar */}
                 <div className="relative shrink-0">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-2xl border border-white/10 shadow-inner">
-                    {player.championTeam?.flagUrl || (player.username?.substring(0, 1).toUpperCase() || '?')}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br from-white/10 to-white/5 flex items-center justify-center font-black text-sm sm:text-2xl border border-white/10 shadow-inner overflow-hidden">
+                    {player.championTeam ? (
+                      <img 
+                        src={getFlagUrl(player.championTeam, 80)} 
+                        alt={player.championTeam.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      player.username?.substring(0, 1).toUpperCase() || '?'
+                    )}
                   </div>
                   <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-cup-navy border border-white/10 rounded-full flex items-center justify-center">
                     <div className="w-1.5 h-1.5 bg-green-500 rounded-full" />
