@@ -41,7 +41,7 @@ const PrizesAndRules = () => {
               <p className="text-cup-gold font-bold text-sm uppercase tracking-widest mb-2">🏆 PREMIO ÚNICO</p>
               <h4 className="text-2xl font-black mb-2">GANADOR ABSOLUTO</h4>
               <p className="text-gray-400 text-sm leading-relaxed">
-                El usuario que ocupe el **1er lugar en el Ranking Global** al finalizar el mundial recibirá el **70% del pozo total acumulado**. ¡Entre más participantes, más grande será tu premio!
+                El usuario que ocupe el **1er lugar en el Ranking Global** al finalizar el mundial recibirá el **60% del pozo total acumulado**. ¡Entre más participantes, más grande será tu premio!
               </p>
             </div>
 
