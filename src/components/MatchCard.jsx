@@ -12,6 +12,7 @@ const MatchCard = ({ match, adminMode, user }) => {
   const [pointsWon, setPointsWon] = useState(null)
   const [predictionData, setPredictionData] = useState(null)
   const [userPaid, setUserPaid] = useState(false)
+  const [updateNotice, setUpdateNotice] = useState(null)
 
   useEffect(() => {
     if (userId && !adminMode) {
@@ -60,8 +61,20 @@ const MatchCard = ({ match, adminMode, user }) => {
           predictedAwayScore: parseInt(prediction.away)
         })
       }).then(res => {
-        if (res.ok) setSubmitted(true)
-      })
+        if (res.ok) {
+          return res.json().then(data => {
+            const wasUpdate = submitted
+            setSubmitted(true)
+            setPredictionData(data)
+            setUpdateNotice(wasUpdate ? '¡Pronóstico actualizado exitosamente!' : '¡Pronóstico guardado exitosamente!')
+            setTimeout(() => setUpdateNotice(null), 3500)
+          })
+        } else {
+          return res.text().then(msg => {
+            alert(msg || 'Error al guardar pronóstico')
+          })
+        }
+      }).catch(() => alert('Error de conexión con el servidor'))
     }
   }
 
@@ -193,9 +206,21 @@ const MatchCard = ({ match, adminMode, user }) => {
       )}
 
       {/* User Prediction Logic */}
-      {!adminMode && match.status === 'SCHEDULED' && (
+      {!adminMode && match.status === 'SCHEDULED' && (() => {
+        // Calculate if predictions are locked (1 hour before match)
+        const isLocked = () => {
+          if (!match.matchDate) return false;
+          const matchTime = new Date(match.matchDate);
+          const now = new Date();
+          const diffMs = matchTime - now;
+          const diffHours = diffMs / (1000 * 60 * 60);
+          return diffHours <= 1;
+        };
+        const locked = isLocked();
+
+        return (
         <div className="mt-2">
-          {/* CASE 1: Not Logged In - Show inputs but disable action (demonstration) */}
+          {/* CASE 1: Not Logged In */}
           {!userId ? (
             <div className="flex flex-col gap-3 opacity-60">
               <div className="flex items-center justify-center gap-4">
@@ -211,10 +236,10 @@ const MatchCard = ({ match, adminMode, user }) => {
               </button>
             </div>
           ) : (
-            /* CASE 2: Logged In - Check payment status */
+            /* CASE 2: Logged In */
             <>
               {!userPaid ? (
-                /* Subcase: Logged in but UNPAID - Show Inactive box (as in your image) */
+                /* Subcase: Logged in but UNPAID */
                 <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center space-y-3 animate-fade-in">
                   <p className="text-[10px] text-red-400 font-black uppercase tracking-widest">Cuenta Inactiva</p>
                   <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Debes activar tu cuenta para poder realizar pronósticos.</p>
@@ -225,13 +250,21 @@ const MatchCard = ({ match, adminMode, user }) => {
                     Ir a Pagos
                   </button>
                 </div>
-              ) : submitted ? (
-                /* Subcase: Paid and Already Submitted */
-                <div className="bg-cup-gold/10 border border-cup-gold/30 p-3 rounded-xl flex items-center justify-center gap-2 text-cup-gold text-xs font-bold uppercase">
-                  <CheckCircle2 size={14} /> Predicción Guardada ({prediction.home} - {prediction.away})
+              ) : locked ? (
+                /* Subcase: LOCKED - 1 hour before match */
+                <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center space-y-2">
+                  {submitted && (
+                    <p className="text-[10px] text-cup-gold font-bold uppercase tracking-widest">
+                      Tu Pronóstico: {prediction.home} - {prediction.away}
+                    </p>
+                  )}
+                  <div className="flex items-center justify-center gap-2 text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados (1h antes del partido)</span>
+                  </div>
                 </div>
               ) : (
-                /* Subcase: Paid and Ready to Predict */
+                /* Subcase: Paid, unlocked - can predict or edit */
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center justify-center gap-4">
                     <input 
@@ -240,6 +273,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                       onChange={(e) => setPrediction({...prediction, home: e.target.value})}
                       className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
                       placeholder="0"
+                      min="0"
                     />
                     <span className="text-gray-600 font-bold">X</span>
                     <input 
@@ -248,14 +282,37 @@ const MatchCard = ({ match, adminMode, user }) => {
                       onChange={(e) => setPrediction({...prediction, away: e.target.value})}
                       className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold focus:border-cup-gold outline-none"
                       placeholder="0"
+                      min="0"
                     />
                   </div>
-                  <button onClick={handlePredict} className="w-full bg-white text-black font-black py-3 rounded-xl hover:bg-cup-gold transition-all text-xs uppercase tracking-widest">Enviar Pronóstico</button>
+                  <button onClick={handlePredict} className={`w-full font-black py-3 rounded-xl transition-all text-xs uppercase tracking-widest ${submitted ? 'bg-cup-gold text-black hover:bg-yellow-400' : 'bg-white text-black hover:bg-cup-gold'}`}>
+                    {submitted ? 'Actualizar Pronóstico' : 'Enviar Pronóstico'}
+                  </button>
+                  {submitted && (
+                    <p className="text-[10px] text-center text-green-400/70 font-bold uppercase tracking-wider">
+                      <CheckCircle2 size={10} className="inline mr-1" />
+                      Pronóstico guardado — puedes editarlo hasta 1h antes del partido
+                    </p>
+                  )}
                 </div>
               )}
             </>
           )}
         </div>
+        );
+      })()}
+
+      {/* Update Notice Toast */}
+      {updateNotice && (
+        <motion.div
+          initial={{ opacity: 0, y: -10, scale: 0.95 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10 }}
+          className="mt-3 bg-green-500/15 border border-green-500/30 p-3 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-green-500/10"
+        >
+          <CheckCircle2 size={16} className="text-green-400 shrink-0" />
+          <span className="text-green-400 text-xs font-black uppercase tracking-wider">{updateNotice}</span>
+        </motion.div>
       )}
 
       {/* Result with real points */}
