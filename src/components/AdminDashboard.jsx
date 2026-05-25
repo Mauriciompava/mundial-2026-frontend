@@ -197,7 +197,7 @@ const AdminDashboard = ({ onLogout }) => {
                   {[
                     { label: 'Usuarios Activos', value: stats.users, delta: '+Real', icon: Users, color: 'text-blue-500' },
                     { label: 'Apuestas Realizadas', value: stats.predictions, delta: '+Real', icon: Trophy, color: 'text-cup-gold' },
-                    { label: 'Ingresos Simulados', value: stats.income, delta: '+Real', icon: Database, color: 'text-green-500', prefix: '$' },
+                    { label: 'Ingresos Acumulados', value: stats.income, delta: '+Real', icon: Database, color: 'text-green-500', prefix: '$' },
                   ].map((stat, i) => (
                     <div key={i} className="glass-card p-8 border-white/5 relative overflow-hidden group">
                       <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
