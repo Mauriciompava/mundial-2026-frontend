@@ -207,14 +207,18 @@ const MatchCard = ({ match, adminMode, user }) => {
 
       {/* User Prediction Logic */}
       {!adminMode && match.status === 'SCHEDULED' && (() => {
-        // Calculate if predictions are locked (1 hour before match)
+        // Calculate if predictions are locked (15 minutes before match)
         const isLocked = () => {
           if (!match.matchDate) return false;
-          const matchTime = new Date(match.matchDate);
+          let dateStr = match.matchDate;
+          if (!dateStr.includes('Z') && !/[+-]\d\d:\d\d$/.test(dateStr)) {
+            dateStr += "-05:00";
+          }
+          const matchTime = new Date(dateStr);
           const now = new Date();
           const diffMs = matchTime - now;
-          const diffHours = diffMs / (1000 * 60 * 60);
-          return diffHours <= 1;
+          const diffMinutes = diffMs / (1000 * 60);
+          return diffMinutes <= 15;
         };
         const locked = isLocked();
 
@@ -260,7 +264,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                   )}
                   <div className="flex items-center justify-center gap-2 text-gray-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados (1h antes del partido)</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados (15 min antes del partido)</span>
                   </div>
                 </div>
               ) : (
@@ -291,7 +295,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                   {submitted && (
                     <p className="text-[10px] text-center text-green-400/70 font-bold uppercase tracking-wider">
                       <CheckCircle2 size={10} className="inline mr-1" />
-                      Pronóstico guardado — puedes editarlo hasta 1h antes del partido
+                      Pronóstico guardado — puedes editarlo hasta 15 min antes del partido
                     </p>
                   )}
                 </div>
