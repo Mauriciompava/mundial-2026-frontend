@@ -68,7 +68,7 @@ const PrizesAndRules = () => {
               { label: 'Marcador Exacto', pts: '+5', desc: 'Aciertas el resultado exacto del partido.', color: 'text-cup-gold' },
               { label: 'Ganador (Tendencia)', pts: '+3', desc: 'Aciertas quién gana, pero no el marcador exacto.', color: 'text-white' },
               { label: 'Empate (Tendencia)', pts: '+1', desc: 'Aciertas que hay empate, pero no el marcador exacto.', color: 'text-gray-400' },
-              { label: 'Campeón Anticipado', pts: '+100', desc: 'Si eliges al equipo que termina siendo campeón al inicio.', color: 'text-cup-cyan' },
+              { label: 'Campeón Anticipado', pts: '+10', desc: 'Si eliges al equipo que termina siendo campeón al inicio.', color: 'text-cup-cyan' },
             ].map((rule, i) => (
               <div key={i} className="flex items-center justify-between p-4 bg-white/5 rounded-xl hover:bg-white/10 transition-all">
                 <div>
@@ -83,7 +83,7 @@ const PrizesAndRules = () => {
           <div className="mt-8 flex items-center gap-3 p-4 border border-dashed border-white/20 rounded-xl">
             <Clock className="text-gray-500" size={20} />
             <p className="text-xs text-gray-400">
-              Las apuestas cierran **1 hora antes** del inicio programado de cada partido.
+              Las apuestas cierran **15 minutos antes** del inicio programado de cada partido.
             </p>
           </div>
         </div>
