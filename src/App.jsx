@@ -58,7 +58,7 @@ function App() {
 
   useEffect(() => {
     if (currentUser) {
-      localStorage.setItem('polla_user', JSON.stringify(currentUser))
+        localStorage.setItem('polla_user', JSON.stringify(currentUser))
     } else {
       localStorage.removeItem('polla_user')
     }

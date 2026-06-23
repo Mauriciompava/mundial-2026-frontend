@@ -6,6 +6,8 @@ const PaymentManager = () => {
   const [pendingUsers, setPendingUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [selectedUser, setSelectedUser] = useState(null)
+  const [receiptImage, setReceiptImage] = useState(null)
+  const [loadingReceipt, setLoadingReceipt] = useState(false)
 
   useEffect(() => {
     fetchPendingPayments()
@@ -16,12 +18,29 @@ const PaymentManager = () => {
       const response = await fetch(`${API_BASE_URL}/api/users`)
       const data = await response.json()
       // Filter users who uploaded a receipt but haven't been marked as paid yet
-      const pending = data.filter(u => u.paymentReceipt && !u.paid)
+      const pending = data.filter(u => u.hasReceipt && !u.paid)
       setPendingUsers(pending)
       setLoading(false)
     } catch (error) {
       console.error('Error fetching pending payments:', error)
       setLoading(false)
+    }
+  }
+
+  const handleViewReceipt = async (user) => {
+    setSelectedUser(user)
+    setReceiptImage(null)
+    setLoadingReceipt(true)
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/users/${user.id}/receipt`)
+      if (response.ok) {
+        const text = await response.text()
+        setReceiptImage(text)
+      }
+    } catch (error) {
+      console.error('Error fetching receipt image:', error)
+    } finally {
+      setLoadingReceipt(false)
     }
   }
 
@@ -102,7 +121,7 @@ const PaymentManager = () => {
                   <td className="px-6 py-4 text-xs text-gray-500">{u.email}</td>
                   <td className="px-6 py-4">
                     <button 
-                      onClick={() => setSelectedUser(u)}
+                      onClick={() => handleViewReceipt(u)}
                       className="flex items-center gap-2 text-cup-cyan hover:text-white transition-colors text-xs font-bold uppercase"
                     >
                       <Eye size={14} /> Ver Imagen
@@ -146,14 +165,16 @@ const PaymentManager = () => {
                 <h3 className="text-xs font-black uppercase tracking-widest text-white">Revisando pago de: <span className="text-cup-gold">{selectedUser.username}</span></h3>
               </div>
               <div className="flex items-center gap-4">
-                <a 
-                  href={selectedUser.paymentReceipt} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="flex items-center gap-2 text-[10px] font-black uppercase text-cup-cyan hover:text-white transition-colors"
-                >
-                  <ExternalLink size={14} /> Abrir Tamaño Completo
-                </a>
+                {receiptImage && (
+                  <a 
+                    href={receiptImage} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    className="flex items-center gap-2 text-[10px] font-black uppercase text-cup-cyan hover:text-white transition-colors"
+                  >
+                    <ExternalLink size={14} /> Abrir Tamaño Completo
+                  </a>
+                )}
                 <button 
                   onClick={() => setSelectedUser(null)}
                   className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-all"
@@ -165,12 +186,23 @@ const PaymentManager = () => {
 
             {/* Contenedor de Imagen con Scroll */}
             <div className="flex-1 overflow-y-auto p-4 md:p-8 bg-black/20 custom-scrollbar">
-              <div className="flex justify-center">
-                <img 
-                  src={selectedUser.paymentReceipt} 
-                  alt="Comprobante de Pago" 
-                  className="w-full h-auto max-w-3xl rounded-xl shadow-2xl border border-white/5"
-                />
+              <div className="flex justify-center items-center h-full min-h-[300px]">
+                {loadingReceipt ? (
+                  <div className="text-center py-20 text-gray-400 font-bold flex flex-col items-center gap-3">
+                    <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-cup-gold"></div>
+                    Cargando comprobante...
+                  </div>
+                ) : receiptImage ? (
+                  <img 
+                    src={receiptImage} 
+                    alt="Comprobante de Pago" 
+                    className="w-full h-auto max-w-3xl rounded-xl shadow-2xl border border-white/5"
+                  />
+                ) : (
+                  <div className="text-center py-20 text-red-500 font-bold">
+                    No se pudo cargar el comprobante o está vacío.
+                  </div>
+                )}
               </div>
             </div>
 
