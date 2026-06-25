@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+// Horarios de partidos de junio 25, 26 y 27 verificados con éxito
 import Navbar from './components/Navbar'
 import TournamentSchedule from './components/TournamentSchedule'
 import Leaderboard from './components/Leaderboard'
