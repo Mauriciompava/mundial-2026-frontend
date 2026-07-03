@@ -212,7 +212,7 @@ const MatchCard = ({ match, adminMode, user }) => {
           if (!match.matchDate) return false;
           let dateStr = match.matchDate;
           if (!dateStr.includes('Z') && !/[+-]\d\d:\d\d$/.test(dateStr)) {
-            dateStr += "-05:00";
+            dateStr += "Z";
           }
           const matchTime = new Date(dateStr);
           const now = new Date();
