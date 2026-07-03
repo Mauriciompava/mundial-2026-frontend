@@ -30,6 +30,7 @@ const TournamentSchedule = ({ adminMode, user }) => {
           },
           date: new Date(m.matchDate).toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }),
           time: new Date(m.matchDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          matchDate: m.matchDate,
           status: m.status,
           stage: m.stage || 'Fase Desconocida',
           homeScore: m.homeScore,

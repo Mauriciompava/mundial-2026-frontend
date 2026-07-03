@@ -17,6 +17,7 @@ const MatchList = ({ adminMode }) => {
           awayTeam: { name: m.awayTeam.name, flag: m.awayTeam.flagUrl, group: m.awayTeam.groupName },
           date: new Date(m.matchDate).toLocaleDateString(),
           time: new Date(m.matchDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          matchDate: m.matchDate,
           status: m.status,
           homeScore: m.homeScore,
           awayScore: m.awayScore
