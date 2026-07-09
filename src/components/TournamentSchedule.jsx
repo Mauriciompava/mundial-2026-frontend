@@ -62,9 +62,13 @@ const TournamentSchedule = ({ adminMode, user }) => {
 
     // Knockout stage filtering logic (if in Knockout phase)
     if (phaseFilter === 'KNOCKOUT' && knockoutStage !== 'ALL') {
-      // Precise check for Final vs Semifinal
+      // Precise checks to avoid partial matches (like 'Semifinal' matching 'Final' or vice versa if using includes)
       if (knockoutStage === 'Final') {
         if (stage !== 'Final') return false
+      } else if (knockoutStage === 'Semifinal') {
+        if (stage !== 'Semifinal') return false
+      } else if (knockoutStage === 'Tercer Puesto') {
+        if (stage !== 'Tercer Puesto') return false
       } else {
         if (!stage.toLowerCase().includes(knockoutStage.toLowerCase())) {
           return false
@@ -92,6 +96,7 @@ const TournamentSchedule = ({ adminMode, user }) => {
     { id: 'Octavos', label: 'Octavos' },
     { id: 'Cuartos', label: 'Cuartos' },
     { id: 'Semifinal', label: 'Semifinal' },
+    { id: 'Tercer Puesto', label: 'Tercer Puesto' },
     { id: 'Final', label: 'Final' }
   ]
 
