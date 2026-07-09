@@ -208,6 +208,9 @@ const MatchCard = ({ match, adminMode, user }) => {
       {/* User Prediction Logic */}
       {!adminMode && match.status === 'SCHEDULED' && (() => {
         const isLocked = () => {
+          const isFranceMorocco = (match.homeTeam?.name === 'Francia' && match.awayTeam?.name === 'Marruecos');
+          if (isFranceMorocco) return false;
+
           if (!match.matchDate) return false;
           let dateStr = match.matchDate;
           if (!dateStr.includes('Z') && !/[+-]\d\d:\d\d$/.test(dateStr)) {
@@ -217,9 +220,7 @@ const MatchCard = ({ match, adminMode, user }) => {
           const now = new Date();
           const diffMs = matchTime - now;
           const diffMinutes = diffMs / (1000 * 60);
-          const isFranceMorocco = (match.homeTeam?.name === 'Francia' && match.awayTeam?.name === 'Marruecos');
-          const limitMinutes = isFranceMorocco ? 0 : 15;
-          return diffMinutes <= limitMinutes;
+          return diffMinutes <= 15;
         };
         const locked = isLocked();
         const isFranceMorocco = (match.homeTeam?.name === 'Francia' && match.awayTeam?.name === 'Marruecos');
@@ -244,9 +245,9 @@ const MatchCard = ({ match, adminMode, user }) => {
           ) : (
             /* CASE 2: Logged In */
             <>
+              {/* Subcase: Inactive account */}
               {!userPaid ? (
-                /* Subcase: Logged in but UNPAID */
-                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl text-center space-y-3 animate-fade-in">
+                <div className="bg-red-500/5 border border-red-500/10 p-5 rounded-2xl text-center space-y-4">
                   <p className="text-[10px] text-red-400 font-black uppercase tracking-widest">Cuenta Inactiva</p>
                   <p className="text-[11px] text-gray-400 leading-relaxed font-medium">Debes activar tu cuenta para poder realizar pronósticos.</p>
                   <button 
@@ -266,7 +267,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                   )}
                   <div className="flex items-center justify-center gap-2 text-gray-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados ({isFranceMorocco ? 'al iniciar el partido' : '15 min antes del partido'})</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados</span>
                   </div>
                 </div>
               ) : (
@@ -297,7 +298,9 @@ const MatchCard = ({ match, adminMode, user }) => {
                   {submitted && (
                     <p className="text-[10px] text-center text-green-400/70 font-bold uppercase tracking-wider">
                       <CheckCircle2 size={10} className="inline mr-1" />
-                      Pronóstico guardado — puedes editarlo hasta {isFranceMorocco ? 'el inicio' : '15 min antes'} del partido
+                      {isFranceMorocco 
+                        ? 'Pronóstico guardado — abierto excepcionalmente sin límite de tiempo'
+                        : 'Pronóstico guardado — puedes editarlo hasta 15 min antes del partido'}
                     </p>
                   )}
                 </div>
