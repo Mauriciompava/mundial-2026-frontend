@@ -207,7 +207,6 @@ const MatchCard = ({ match, adminMode, user }) => {
 
       {/* User Prediction Logic */}
       {!adminMode && match.status === 'SCHEDULED' && (() => {
-        // Calculate if predictions are locked (15 minutes before match)
         const isLocked = () => {
           if (!match.matchDate) return false;
           let dateStr = match.matchDate;
@@ -218,9 +217,12 @@ const MatchCard = ({ match, adminMode, user }) => {
           const now = new Date();
           const diffMs = matchTime - now;
           const diffMinutes = diffMs / (1000 * 60);
-          return diffMinutes <= 15;
+          const isFranceMorocco = (match.homeTeam?.name === 'Francia' && match.awayTeam?.name === 'Marruecos');
+          const limitMinutes = isFranceMorocco ? 0 : 15;
+          return diffMinutes <= limitMinutes;
         };
         const locked = isLocked();
+        const isFranceMorocco = (match.homeTeam?.name === 'Francia' && match.awayTeam?.name === 'Marruecos');
 
         return (
         <div className="mt-2">
@@ -233,10 +235,10 @@ const MatchCard = ({ match, adminMode, user }) => {
                 <input type="number" disabled className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl text-center text-xl font-bold" placeholder="0" />
               </div>
               <button 
-                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} 
-                className="w-full bg-white/10 text-gray-400 font-black py-3 rounded-xl text-xs uppercase tracking-widest cursor-pointer hover:bg-white hover:text-black transition-all"
+                disabled 
+                className="w-full bg-white/10 text-white/40 font-black py-3 rounded-xl text-xs uppercase tracking-widest"
               >
-                Ingresar para Participar
+                Inicia sesión para jugar
               </button>
             </div>
           ) : (
@@ -255,8 +257,8 @@ const MatchCard = ({ match, adminMode, user }) => {
                   </button>
                 </div>
               ) : locked ? (
-                /* Subcase: LOCKED - 1 hour before match */
-                <div className="bg-white/5 border border-white/10 p-4 rounded-xl text-center space-y-2">
+                /* Subcase: LOCKED */
+                <div className="flex flex-col gap-2">
                   {submitted && (
                     <p className="text-[10px] text-cup-gold font-bold uppercase tracking-widest">
                       Tu Pronóstico: {prediction.home} - {prediction.away}
@@ -264,7 +266,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                   )}
                   <div className="flex items-center justify-center gap-2 text-gray-500">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados (15 min antes del partido)</span>
+                    <span className="text-[10px] font-black uppercase tracking-widest">Pronósticos cerrados ({isFranceMorocco ? 'al iniciar el partido' : '15 min antes del partido'})</span>
                   </div>
                 </div>
               ) : (
@@ -295,7 +297,7 @@ const MatchCard = ({ match, adminMode, user }) => {
                   {submitted && (
                     <p className="text-[10px] text-center text-green-400/70 font-bold uppercase tracking-wider">
                       <CheckCircle2 size={10} className="inline mr-1" />
-                      Pronóstico guardado — puedes editarlo hasta 15 min antes del partido
+                      Pronóstico guardado — puedes editarlo hasta {isFranceMorocco ? 'el inicio' : '15 min antes'} del partido
                     </p>
                   )}
                 </div>
