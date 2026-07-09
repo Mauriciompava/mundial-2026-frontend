@@ -306,6 +306,45 @@ const ParticipantManager = ({ onParticipantAdded }) => {
                     <span>Aporte Polla</span>
                     <span>${(user.entryFee || 0).toLocaleString()}</span>
                   </div>
+                  
+                  {/* Direct point adjustment and payment approval tools */}
+                  <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-2">
+                    <span className="text-[10px] font-black uppercase text-cup-cyan">Pago Aprobado</span>
+                    <input 
+                      type="checkbox" 
+                      defaultChecked={user.paid}
+                      onChange={async (e) => {
+                        const status = e.target.checked
+                        try {
+                          await fetch(`${API_BASE_URL}/api/users/${user.id}/toggle-payment?status=${status}`, {
+                            method: 'POST'
+                          })
+                        } catch (err) {
+                          console.error("Error setting payment status:", err)
+                        }
+                      }}
+                      className="w-4 h-4 bg-black/40 border border-white/10 rounded cursor-pointer accent-cup-cyan"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-2">
+                    <span className="text-[10px] font-black uppercase text-cup-gold">Puntos Acumulados</span>
+                    <input 
+                      type="number" 
+                      defaultValue={user.totalPoints || 0}
+                      onBlur={async (e) => {
+                        const val = parseInt(e.target.value) || 0
+                        try {
+                          await fetch(`${API_BASE_URL}/api/users/${user.id}/update-points?points=${val}`, {
+                            method: 'POST'
+                          })
+                        } catch (err) {
+                          console.error("Error setting points:", err)
+                        }
+                      }}
+                      className="w-16 h-8 bg-black/40 border border-white/10 rounded text-center text-xs font-bold focus:border-cup-gold outline-none"
+                    />
+                  </div>
                 </div>
               </motion.div>
             ))}
