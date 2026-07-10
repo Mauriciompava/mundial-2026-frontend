@@ -285,13 +285,6 @@ const ParticipantManager = ({ onParticipantAdded }) => {
                     >
                       <Edit2 size={16} />
                     </button>
-                    <button 
-                      onClick={() => handleDelete(user.id)}
-                      className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all"
-                      title="Eliminar"
-                    >
-                      <Trash2 size={16} />
-                    </button>
                   </div>
                 </div>
                 
@@ -328,22 +321,30 @@ const ParticipantManager = ({ onParticipantAdded }) => {
                   </div>
 
                   <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-2">
-                    <span className="text-[10px] font-black uppercase text-cup-gold">Puntos Acumulados</span>
-                    <input 
-                      type="number" 
-                      defaultValue={user.totalPoints || 0}
-                      onBlur={async (e) => {
-                        const val = parseInt(e.target.value) || 0
-                        try {
-                          await fetch(`${API_BASE_URL}/api/users/${user.id}/update-points?points=${val}`, {
-                            method: 'POST'
-                          })
-                        } catch (err) {
-                          console.error("Error setting points:", err)
-                        }
-                      }}
-                      className="w-16 h-8 bg-black/40 border border-white/10 rounded text-center text-xs font-bold focus:border-cup-gold outline-none"
-                    />
+                    <span className="text-[10px] font-black uppercase text-cup-gold">Puntos Base (Manual)</span>
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="number" 
+                        defaultValue={user.basePoints || 0}
+                        onBlur={async (e) => {
+                          const val = parseInt(e.target.value) || 0
+                          try {
+                            await fetch(`${API_BASE_URL}/api/users/${user.id}/update-points?points=${val}`, {
+                              method: 'POST'
+                            })
+                            fetchParticipants()
+                          } catch (err) {
+                            console.error("Error setting base points:", err)
+                          }
+                        }}
+                        className="w-16 h-8 bg-black/40 border border-white/10 rounded text-center text-xs font-bold focus:border-cup-gold outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between border-t border-white/5 pt-2 mt-2 bg-cup-gold/5 -mx-5 px-5 py-2">
+                    <span className="text-[10px] font-black uppercase text-green-400">🏆 Total Acumulado</span>
+                    <span className="text-sm font-black text-green-400">{user.totalPoints || 0} pts</span>
                   </div>
                 </div>
               </motion.div>
